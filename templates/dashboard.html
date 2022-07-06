@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Admin</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+  <!-- importing required CDN's, CSS and JS -->
+  <link rel="stylesheet" href="/media/vendors/feather/feather.css">
+  <link rel="stylesheet" href="/media/vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="/media/vendors/css/vendor.bundle.base.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://portal.e-yantra.org/img/favicon_io/favicon-32x32.png">
+  <link rel="stylesheet" type="text/css" href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="/media/css/style.css">
+  <link rel="stylesheet" type="text/css" href="/media/js/styles.css">
+
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+  crossorigin="anonymous"></script>
+
+  {% comment %} <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/fontawesome.min.css" integrity="sha384-zIaWifL2YFF1qaDiAo0JFgsmasocJ/rqu7LKYH8CoBEXqGbb9eO+Xi3s6fQhgFWM" crossorigin="anonymous"> {% endcomment %}
+
+  {% comment %} <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script> {% endcomment %}
+  <script src="https://cdn.anychart.com/releases/8.8.0/js/anychart-base.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<!-- CDN's for datatables -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.4.0/css/select.dataTables.min.css">
+
+<script type="text/javascript" charset="utf8"
+  src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" charset="utf8"
+  src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" charset="utf8"
+  src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" charset="utf8"
+  src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" charset="utf8"
+  src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script type="text/javascript" charset="utf8"
+  src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script>
+
+
+  <style>
+    #sidebar .mdi {
+      font-size: 2em;
+      height: 0.5px;
+      margin-top: -46px !important;
+      margin-left: -6px;
+      padding-right: 7px;
+      color: #818795; 
+    }
+    .nav-link:hover > .mdi, .active > a > .mdi{ 
+      color:white !important;
+    }
+
+    #box_chart {
+      width: 100%;
+      height: 50vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .card{
+      border-radius: 20px;
+    }
+
+    .btn_mail:hover {
+      color: #fff !important;
+      background-color: #1d5614 !important;
+    }
+
+    ol li{
+      color:#11406ee0 !important;
+    }
+
+    li::before {
+      color:#212529 !important;
+    }
+
+    .req::after {
+      content: "*";
+      color: red;
+    }
+
+    .btn-primary:disabled {
+      text-decoration-line: line-through !important;
+    }
+
+  </style> 
+</head>
+<body>
+  <div class="container-scroller">
+    <!-- importing navbar template from usernavbar.html -->
+    {% include 'usernavbar.html' with theme=theme %}
+      <div class="main-panel" style="right:0px; position:absolute;">
+        <div class="content-wrapper">
+          <!-- hero component of dashboard -->
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  <!-- User Name and quote of the day -->
+                  <h3 class="font-weight-bold">Welcome {{ user.get_username }}</h3>
+                  <h5 class="font-weight-normal mb-0" id="quotes">All systems are running smoothly! Have a great day ahead! :) Just Kidding</h5>
+                  <p id="author" style="text-align: end;"></p>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <!-- image of people and temperature -->
+            <!-- <div class="col-md-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-people mt-auto">
+                  <img src="/media/images/people.jpg" alt="people">
+                  <div class="weather-info">
+                    <div class="d-flex">
+                      <div>
+                        <h2 class="mb-0 font-weight-normal"><span id="temperature">31</span><sup>&#176;C</sup></h2>
+                      </div>
+                      <div class="ml-2">
+                        <h4 class="location font-weight-normal">Mumbai</h4>
+                        <h6 class="font-weight-normal">India</h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div> -->
+            <div class="col-12 col-lg-7 col-xs-12 mb-3">
+              <div style="margin: 5px; border-radius: 20px;background-color:white;padding: 10px;">
+                <!-- canvas for doughnut chart -->
+                <canvas id="myChart" style="max-height:70vh;"></canvas>                
+                {% comment %} <canvas id="doughnutChart" style="min-height: 42vh; margin-bottom: 10px;"></canvas> {% endcomment %}
+                <div id="spinner_home1">
+                  ML model is loading...  
+                  <div class="spinner-border ms-auto text-success" id="statusSpin1" role="status" aria-hidden="true"></div>
+                </div> 
+              </div>
+            </div>
+            <div class=" mt-2 col-12 col-lg-5 grid-margin transparent">
+              <div class="row">
+                <!-- piazza data from backend -->
+                <div class="col-6 mb-4 stretch-card transparent">
+                  <div class="card card-tale" style="min-width:130px;">
+                    <div class="card-body">
+                      <p class="mb-4">Total Contributions</p>
+                      <p class="fs-30 mb-2">{{piazza_stats.posts}}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 mb-4 stretch-card transparent">
+                  <div class="card card-dark-blue" style="min-width:130px;">
+                    <div class="card-body">
+                      <p class="mb-4">Total Questions</p>
+                      <p class="fs-30 mb-2">{{piazza_stats.questions}}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6 mb-4 mb-lg-0 stretch-card transparent">
+                  <div class="card card-light-blue" style="min-width:130px;">
+                    <div class="card-body">
+                      <p class="mb-4">Answers by Instructors</p>
+                      <p class="fs-30 mb-2">{{piazza_stats.i_answers}}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 mb-4 mb-lg-0 stretch-card transparent">
+                  <div class="card card-light-danger" style="min-width:130px;">
+                    <div class="card-body">
+                      <p class="mb-4">Answers By Students</p>
+                      <p class="fs-30 mb-2">{{piazza_stats.s_answers}}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <br>
+              <div class="row">
+                <div class="col-md-12 mb-4 mb-lg-0 stretch-card transparent">
+                  <div class="card card-tale">
+                    <div class="card-body">
+                      <p class="mb-4">Average Session Time</p>
+                      <p class="fs-30 mb-2">{% widthratio piazza_stats.response_time 60 1 %} min</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- box chart for feedback of task -->
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 id="feedback_title"></h4>
+                  <div class="row">
+                    <div class="row buttons">
+                      <div class="col-md-12 my-2" style="margin-top: 5px;">
+                        <h6 style="display:inline-block; font-weight: 400; margin: 10px 10px;">Select task:</h6>
+                        <select id="task_select" class="form-select selectpicker show-tick" onchange="updateOnChange()" value="0" style="display:inline-block; width: 155px;">  
+                          <option value="0">Task 0</option>
+                          <option value="1">Task 1</option>
+                          <option value="2">Task 2</option>
+                          <option value="6">Stage 1 Part 1</option>
+                          <option value="7">Stage 1 Part 2</option>
+                          <option value="8">Stage 1 Part 3</option>
+                          <option value="9">Stage 1 Part 4</option>
+                          <option value="3">Task 3</option>
+                          <option value="4">Task 4</option>
+                          <option value="5">Task 5</option>
+                        </select>
+                      </div>
+                    </div>
+                    <br>
+                    <br>
+                    <!-- container of box chart -->
+                    <div id="box_chart"></div>
+                  </div>
+                </div>
+                <br>
+                <div class="row">
+                  <div class="col-12">
+                    <!-- Legend -->
+                    <div id="legend">Legend</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- another chart space for future -->
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <p class="card-title">Informed Teams Counter</p>
+                  </div>
+                  <p class="font-weight-500">This is the count of the total number of teams who viwed and teams that didn't view the topics posted by instructor </p>
+                  
+                  <div class="row px-2 py-2">
+                    <div class="col-12 col-sm-6" style="padding: 3px;">
+                      <!-- select to choose theme -->
+                      <label class="ml-1" style="margin-top: 8px;">Select Category:</label>
+                      <select id="category_select" class="form-select" onchange="updateOnChange_category()" style="min-width: 176px; width: 17vw; display: inline; margin-left: 5px;">
+                        <option value="-5">Select Category</option>
+                        <!-- <option value="BM">BM</option>
+                        <option value="DB">DB</option>
+                        <option value="FW">FW</option>
+                        <option value="SM">SM</option>
+                        <option value="SS">SS</option> -->
+                      </select>
+                    </div>
+                    <div class="col-12 col-sm-6" style="padding: 3px;">
+                      <!-- select to choose task  -->
+                      <label class="ml-1" style="margin-top: 8px;">Select Topic:</label>
+                      <select id="topic_select" class="form-select"  style="min-width: 176px; width: 17vw; display: inline; margin-left: 5px;">
+                        <option value="-5">Select Topic</option>
+                        <!-- <option value="1">Task 1</option>
+                        <option value="2">Task 2</option>
+                        <option value="6">Stage 1</option>
+                        <option value="3">Task 3</option>
+                        <option value="4">Task 4</option>
+                        <option value="5">Task 5</option> -->
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row justify-content-sm-center ml-2 mr-sm-l my-2"> 
+                    <button class="btn btn-success" onclick="updateOnChange_topic()" style="max-width: 130px; ">Search Data</button>
+                  </div>
+                </div>
+                {% comment %} <div id="informed_teams" style="display:none;"> {% endcomment %}
+                  <div class="row">
+                    <div class="col-12" style="text-align:center;">
+                      <canvas id="barChart2" style="display:inline !important; max-width: 65%"></canvas>
+                    </div>
+                  </div>
+                  <div class="row p-3">
+                    <div class="col-12">
+                      <table id="table3" class="table table-hover table-bordered table-striped" style="width: 100%; cursor: pointer; text-align: center;border:none; top:0%;">
+                        <!-- table head and table columns -->
+                        <thead>
+                          <tr style="top:0; position:sticky; background-color: #030835; color: white; z-index:1;"> 
+                            <th>
+                              <button style="border: none; background: transparent; font-size: 14px;" id="MyTableCheckAllButton"/>
+                              {% comment %} <i class="far fa-square"></i> {% endcomment %}
+                              <svg style="width:16px;height:16px" viewBox="0 0 24 24">
+                                <path fill="white" d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z" />
+                              </svg>
+                            </th>
+                            {% comment %} <th></th> {% endcomment %}
+                            <th>Team_id</th>
+                            <th>Status</th>
+                            <th>Captain's Name</th>
+                            <th>Captain's Email</th>
+                            <th>Captain's Contact No</th>
+                          </tr>
+                        </thead>
+                        <!-- table body for populating data -->
+                        <tbody id="table3Content">
+                        </tbody>
+                        <!-- table footer and table columns -->
+                        {% comment %} <tfoot>
+                          <tr style="bottom:0; position:sticky; background-color: #030835; color: white;">
+                            <td>Team_id</td>
+                            <td>Status</td>
+                            <td>Captain's Name</td>
+                            <td>Captain's Email</td>
+                            <td>Captain's Contact No</td>
+                          </tr>
+                        </tfoot> {% endcomment %}
+                      </table>
+                      <!-- #### Checkboxes to select seen/unseen teams #### -->
+                      <div class="d-flex" style="margin-top: 15px;">
+                        <label class="form-check mr-3 ml-0" style="margin-top: 6px;">Email reminder to </label>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="seen-teams" value="option1">
+                          <label class="ml-0 form-check-label" for="seen-teams">Seen Teams</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="checkbox" id="unseen-teams" value="option2">
+                          <label class="ml-0 form-check-label" for="unseen-teams">Unseen Teams</label>
+                        </div>
+                        <button type="button" id="draft-mail" class="btn btn-outline-success" data-toggle="modal" data-target="#alertEmail" style="padding: 5px 9px;">Draft Mail</button>
+                      </div>
+
+                      <!-- #### Alert to confirm the "Team IDs" #### -->
+                      <div class="modal fade" id="alertEmail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document" style="margin-top:10px;">
+                          <div class="modal-content" style="max-height:38rem;">
+                            <div class="modal-header" style="padding:20px 25px;">
+                              <h5 class="modal-title">Confirm the Team ID(s)</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body" style="padding:10px 30px; overflow:auto;">
+                              <div class="accordion" id="accordionExample">
+                                <div class="card">
+                                  <div class="card-header">
+                                    <h2 class="mb-0">
+                                      <button id="alertButton" class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="color:#760057;"></button>
+                                    </h2>
+                                  </div>
+                                  <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                    <div class="card-body">
+                                      <ol class="list-group list-group-numbered" id="alertBody"></ol>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
+                              <button id="alertSubmit" type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#draftEmail" disabled="true">Confirm</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- #### Modal to draft the email #### -->
+                      <div class="modal fade" id="draftEmail" tabindex="-1" role="dialog" aria-labelledby="draftEmail" aria-hidden="true">
+                        <div class="modal-dialog" role="document" style="margin-top:10px;">
+                          <div class="modal-content">
+                            <div class="modal-header" style="padding:20px 25px;">
+                              <h5 class="modal-title" id="draftEmailLabel">Draft Mail</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body" style="padding:10px 30px;">
+                              <form class="needs-validation" novalidate>
+                                <div class="form-group mb-3">
+                                  <label for="recipient-name" class="col-form-label" style="margin-bottom:0px; padding-bottom:5px;">To</label>
+                                  <input type="email" class="form-control mb-2" id="draftEmail-cc" placeholder="cc" style="padding:5px 10px; height:35px;">
+                                  <input type="email" class="form-control" id="draftEmail-bcc" placeholder="bcc" style="padding:5px 10px; height:35px;">
+                                </div>
+                                <div class="form-group mb-3">
+                                  <label for="recipient-name" class="col-form-label req" style="margin-bottom:0px; padding-bottom:5px;">Subject</label>
+                                  <input type="text" required class="form-control" id="draftEmail-sub" placeholder="Subject" style="padding:5px 10px; height:35px;">
+                                </div>
+                                {% comment %} <div class="form-group">
+                                  <label for="recipient-name" class="col-form-label">Recipient:</label>
+                                  <input type="text" class="form-control" id="recipient-name">
+                                </div> {% endcomment %}
+                                <div class="form-group">
+                                  <label for="message-text" class="col-form-label req" style="margin-bottom:0px; padding-bottom:5px;">Message</label>
+                                  <textarea class="form-control" required placeholder="Message" id="draftEmail-msg" style="min-height:145px;"></textarea>
+                                  <button type="button" id="draftEmailSubmit" class="btn btn-primary">Send</button>
+                                </div>
+                              </form>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% comment %} </div> {% endcomment %}
+
+              </div>
+            </div>
+          </div>
+
+        </div>  
+      </div>
+    </div>
+  </div>
+  <!-- important Scripts -->
+  <script src="/media/vendors/js/vendor.bundle.base.js"></script>
+  {% comment %} <script src="/media/vendors/chart.js/Chart.min.js"></script> {% endcomment %}
+  <script src="/media/js/off-canvas.js"></script>
+  <script src="/media/js/hoverable-collapse.js"></script>
+  <script src="/media/js/template.js"></script>
+  <script src="/media/js/dashboard.js"></script>
+
+  <script>
+    localStorage.setItem("thresh","{{thresh|escapejs}}")
+    localStorage.setItem("parameters","{{parameters|escapejs}}")
+    localStorage.setItem("json_data","{{json_data|escapejs}}")
+    localStorage.setItem("this_task", "{{this_task|escapejs}}")
+    localStorage.setItem("current_task", "{{current_task|escapejs}}")
+    localStorage.setItem("discourse_topics", "{{discourse_topics|escapejs}}")
+    localStorage.setItem("discourse_categories", "{{discourse_categories|escapejs}}")
+  </script>
+
+</body>
+
+</html>
+

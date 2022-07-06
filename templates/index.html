@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Task</title>
+    <!-- loading important CSS and JS files -->
+    <link rel="stylesheet" type="text/css" href="/media/css/style.css">
+    <link rel="stylesheet" href="/media/vendors/feather/feather.css">
+    <link rel="stylesheet" href="/media/vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="/media/vendors/css/vendor.bundle.base.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://portal.e-yantra.org/img/favicon_io/favicon-32x32.png">
+    <link rel="stylesheet" type="text/css"
+      href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://portal.e-yantra.org/img/favicon_io/favicon-32x32.png">
+    <link rel="stylesheet" type="text/css"
+      href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css">
+
+    <!-- import datatables using CDN -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+    <!-- Bootstarp CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="/media/js/styles.css">
+
+    <!-- import jquery using CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+    <!-- Bootstarp JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+      crossorigin="anonymous"></script>
+
+    <!-- CDN's for datatables -->
+    <script type="text/javascript" charset="utf8"
+      src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8"
+      src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" charset="utf8"
+      src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" charset="utf8"
+      src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" charset="utf8"
+      src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript" charset="utf8"
+      src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+      <!-- import any chart -->
+      <script src="https://cdn.anychart.com/releases/8.8.0/js/anychart-base.min.js"></script>
+    <!-- import Chart JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+    <style>
+      /* CSS for page */
+      #sidebar .mdi {
+        font-size: 2em;
+        height: 0.5px;
+        margin-top: -46px !important;
+        margin-left: -6px;
+        padding-right: 7px;
+        color: #818795;
+      }
+
+      .nav-link:hover>.mdi,
+      .active>a>.mdi {
+        color: white !important;
+      }
+      #box_chart2 {
+        width: 100%;
+        height: 60vh;
+        margin: 0;
+        padding: 0;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div class="container-scroller" style="background-color:#f2f5fa;">
+      <!-- importing navbar template from usernavbar.html -->
+      {% include 'usernavbar.html' with theme=theme %}
+      <div class="main-panel" style="right:0px; position:absolute;">
+        <div class="content-wrapper" style="padding-bottom:30px;">
+
+          <!-- container for bar chart and doughnut chart -->
+          <div class="row">
+            <div class="col-6 col-lg-8">
+              <div style="min-height: 56vh; border: none; margin: 5px; border-radius: 3px;background-color:white;padding: 10px;">
+                <!-- canvas for bar chart -->
+                <canvas id="barChart" style="min-height: 56vh; margin-bottom: 10px;" ></canvas> 
+              </div>
+            </div>
+            <div class="col-6 col-lg-4">
+              <div style="min-height: 50vh; border: none; margin: 5px; border-radius: 3px;background-color:white;padding: 10px;">
+                <!-- canvas for doughnut chart -->
+                <canvas id="doughnutChart" style="min-height: 46vh; margin-bottom: 10px;"></canvas> 
+                {% comment %} <div class="row"> 
+                  <div class="col-6"><label style="margin-top: 8px;">Select Theme:</label></div>
+                  <div class="col-6" style="padding: 3px;">
+                    <!-- select for changing theme -->
+                    <select id="doughnut1" class="form-select " onchange="updateDoughnutChart()" value="ALL" style="width: fit-content;">
+                      <option value="ALL">All Teams</option>
+                      <option value="AB">AB</option>
+                      <option value="BM">BM</option>
+                      <option value="DB">DB</option>
+                      <option value="FW">FW</option>
+                      <option value="SM">SM</option>
+                      <option value="SS">SS</option>
+                    </select>
+                  </div>
+                </div> {% endcomment %}
+                <div class="row">
+                  <div class="col-6" style="text-align: center;">
+                    <button type="button" id="update_switch" class="btn btn-outline-danger btn-sm" onclick="update_chart_data()"><i class="mdi mdi-update" style="font-size: 1.2em;"></i> Update Details</button>
+                  </div>
+                  <div class="col-6">
+                    <strong>Updated <span id="time_pass_updated">0</span> min ago</strong>
+                  </div>
+                </div>
+              </div>
+            </div>  
+          </div>
+
+          <br>
+
+          <div class="row">
+            <div class="col-12 col-lg-4">
+              <div style="min-height: 55vh;text-align: center; border: none; margin: 5px; border-radius: 3px;background-color:white;padding: 10px;">
+                <!-- model metrics element -->
+                <h4 id="modelHeader">Model Metrics for</h4>
+                <img id="modelMetrics" style="width: 100%; height: 230px; border: none"/>
+                <strong>Threshold value for this Task: <span id="threshold_val"></span></strong>
+                <p>Parameters Considered</p>
+                <div id="modelParameters" style="overflow: auto; max-width: inherit; max-height: 20vh;"></div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-8">
+              <div style="min-height: 53vh;border:none; margin: 5px; border-radius: 3px;background-color:white;padding: 10px;">
+                <canvas id="lineChart" style="min-height: 50vh; margin-bottom: 10px;" ></canvas> 
+                {% comment %} <div class="row"> 
+                  <div class="col-6"><label style="margin-top: 8px;">Select Theme:</label></div>
+                  <div class="col-6" style="padding: 3px;">
+                    <!-- select for changing theme -->
+                    <select id="line1" class="form-select " onchange="updateLineChart()" value="ALL" style="width:90%;">
+                      <option value="ALL">All Teams</option>
+                      <option value="AB">AB</option>
+                      <option value="BM">BM</option>
+                      <option value="DB">DB</option>
+                      <option value="FW">FW</option>
+                      <option value="SM">SM</option>
+                      <option value="SS">SS</option>
+                    </select>
+                  </div>
+                </div> {% endcomment %}
+              </div>
+            </div>
+          </div>
+            
+          <br>
+          
+          <div class="container-fluid" id="feedback_chart_container" style="border:none;text-align: center; margin: 5px; border-radius: 3px;background-color:white;padding: 10px;">
+            <div class="row">
+              <div class="col-12">
+                <div class="row"> 
+                  {% comment %} <div class="col-3"><label style="margin-top: 8px;">Select Theme:</label></div>
+                  <div class="col-3" style="padding: 3px;">
+                    <!-- select for changing theme -->
+                    <select id="feedback_select2" class="form-select" onchange="updateOnChange2()" value="AB" style="width:90%;">
+                      <option value="AB">AB</option>
+                      <option value="BM">BM</option>
+                      <option value="DB">DB</option>
+                      <option value="FW">FW</option>
+                      <option value="SM">SM</option>
+                      <option value="SS">SS</option>
+                    </select>
+                  </div> {% endcomment %}
+                  <div class="col-3"><label style="margin-top: 8px;">Select Task:</label></div>
+                  <div class="col-3" style="padding: 3px;">
+                    <!-- select for changing questions -->
+                    <select id="question_select" class="form-select"onchange="updateOnChange2()" style="width:90%;"></select>
+                  </div>
+                </div>
+                <br>
+                <h4 id="feedback_title2"></h4>
+                <br>
+                <!-- canvas for box chart -->
+                <div id="box_chart2"></div>
+              </div>
+            </div>
+          </div>
+          
+          <br>
+          <br>
+
+          <!-- Container for predicted table -->
+          <div class="container" style="background-color: white; padding: 10px;border-radius: 3px;box-shadow:3px 5px 3px 0px #777;">
+            <div class="d-flex justify-content-center">
+              <p style="font-size:25px; margin:0px; padding-top:10px;">Predicted Results</p>
+              <div id="spinner_home1">
+                <div class="spinner-border ms-auto text-success" id="statusSpin1" role="status" aria-hidden="true"></div>
+              </div>
+            </div>
+            <br>
+            <div style="width: 80%; text-align: center; margin-left: 10%;margin-right: 10%;">
+              <div class="row">
+                <!-- select for the filter by column -->
+                <div class="col-4 col-lg-3 my-1">
+                  <select name="column_sel" id="column_sel" style="max-width:20vw;" class="form-select mx-auto" value="0">
+                    <option value="0">Team Id</option>
+                    <option value="3">Confidence</option>
+                    <option value="4">Login Count</option>
+                    <option value="6">Days Online</option>
+                    <option value="7">Posts</option>
+                    <option value="8">Answers</option>
+                  </select>
+                </div>
+                <!-- lower bound of the filter  -->
+                <div class="col-4 col-lg-3 my-1">
+                  <input type="text" id="min" style="max-height:38px; max-width:20vw;" class="form-control mx-auto" placeholder="Lower boundary" name="min">
+                </div>
+                <!-- uper lound of the filter -->
+                <div class="col-4 col-lg-3 my-1">
+                  <input type="text" id="max" style="max-height:38px; max-width:20vw;" class="form-control mx-auto" placeholder="Upper boundary" name="max">
+                </div>
+                <!-- Button to show/hide columns  -->
+                <div class="col col-lg-3 my-2 my-lg-1">
+                  <button type="button" id="toggle_switch" class="btn btn-outline-success" onclick="toggleColumns()">Show Details</button>
+                </div>
+              </div>
+            </div>
+            <br>
+            <div style="">
+              <!-- Predicted table -->
+              <table id="table1" class="table table-striped table-hover table-bordered" style="width: 100%; cursor: pointer; text-align: center;border:1px solid black;top: 0px;">
+                <!-- table head and table columns -->
+                <thead>
+                  <tr style="top:0; position:sticky; background-color: #030835; color: white;">
+                    <th>Team_id</th>
+                    <th>Theme</th>
+                    <th>Prediction</th>
+                    <th>Confidence</th>
+                    <th>Login Count</th>
+                    <th>Last Login</th>
+                    <th>Discourse days online</th>
+                    <th>Posts</th>
+                    <th>answers</th>
+                    <th>Captain's Email</th>
+                    <th>2nd Member's Email</th>
+                    <th>3rd Member's Email</th>
+                    <th>4th Member's Email</th>
+                    <th>Captain's Number</th>
+                    <th>2nd Member's Number</th>
+                    <th>3rd Member's Number</th>
+                    <th>4th Member's Number</th>
+                  </tr>
+                </thead>
+                <!-- table body for populating data -->
+                <tbody id="table1Content">
+                </tbody>
+                <!-- table footer and table columns -->
+                <tfoot>
+                  <tr style="bottom:0; position:sticky; background-color: #030835; color: white;">
+                    <th>Team_id</th>
+                    <th>Theme</th>
+                    <th>Prediction</th>
+                    <th>Confidence</th>
+                    <th>Login Count</th>
+                    <th>Last Login</th>
+                    <th>Discourse days online</th>
+                    <th>Posts</th>
+                    <th>answers</th>
+                    <th>Captain's Email</th>
+                    <th>2nd Member's Email</th>
+                    <th>3rd Member's Email</th>
+                    <th>4th Member's Email</th>
+                    <th>Captain's Number</th>
+                    <th>2nd Member's Number</th>
+                    <th>3rd Member's Number</th>
+                    <th>4th Member's Number</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          <!-- first table ends -->
+            
+          <br>
+          
+          <!-- TEAMS SUBMITTED TABLE -->
+          <div class="container" style="background-color: white; padding: 10px;border-radius: 5px;box-shadow:3px 5px 3px 0px #777;">
+            <div class="d-flex justify-content-center">
+              <p style="font-size:25px; margin:0px; padding-top:10px;">Teams Submitted</p>
+              <div id="spinner_home2">
+                <div class="spinner-border ms-auto text-success" id="statusSpin2" role="status" aria-hidden="true"></div>
+              </div>
+            </div>
+            <br>
+            <!-- Submitted table -->
+            <div style="">
+              <table id="table2" class="table table-hover table-bordered table-striped" style="width: 100%; cursor: pointer; text-align: center;border:1px solid black; top:0;">
+                <!-- table head and table columns -->
+                <thead>
+                  <tr style="top:0; position:sticky; background-color: #030835; color: white;">
+                    <th>Team_id</th>
+                    <th>Theme</th>
+                    <th>Date of Submission</th>
+                  </tr>
+                </thead>
+                <!-- table body for populating data -->
+                <tbody id="table2Content">
+                </tbody>
+                <!-- table footer and table columns -->
+                <tfoot>
+                  <tr style="bottom:0; position:sticky; background-color: #030835; color: white;">
+                    <th>Team_id</th>
+                    <th>Theme</th>
+                    <th>Date of Submission</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          <!-- submitted table ends -->
+          
+          <br>
+        </div>
+      </div>
+    </div>
+
+    <script src="/media/js/off-canvas.js"></script>
+    <script src="/media/js/hoverable-collapse.js"></script>
+    <script src="/media/js/template.js"></script>
+    <!-- store the data in local storage to retrive data in JSON -->
+    <script>
+      localStorage.setItem("total", "{{total|escapejs}}")
+      localStorage.setItem("this_task", "{{this_task|escapejs}}")
+      localStorage.setItem("prev_task", "{{prev_task|escapejs}}")
+      localStorage.setItem("sub_by_date","{{sub_by_date|escapejs}}")
+      localStorage.setItem("taskname", "{{taskname|escapejs}}")
+      localStorage.setItem("sub_this_task", "{{sub_this_task|escapejs}}")
+      localStorage.setItem("sub_by_date","{{sub_by_date|escapejs}}")
+      localStorage.setItem("thresh","{{thresh|escapejs}}")
+      localStorage.setItem("parameters","{{parameters|escapejs}}")
+      localStorage.setItem("details","{{details|escapejs}}")
+      localStorage.setItem("json_data","{{json_data|escapejs}}")
+    </script>
+    <script src="/media/js/index.js"></script>
+  </body>
+
+</html>

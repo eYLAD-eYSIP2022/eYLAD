@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Admin</title>
+    <link rel="stylesheet" href="/media/vendors/feather/feather.css">
+    <link rel="stylesheet" href="/media/vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="/media/vendors/css/vendor.bundle.base.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://portal.e-yantra.org/img/favicon_io/favicon-32x32.png">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://portal.e-yantra.org/img/favicon_io/favicon-32x32.png">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">
+
+    <link rel="stylesheet" href="/media/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/media/js/styles.css">
+    <style>
+        #sidebar .mdi {
+            font-size: 2em;
+            height: 0.5px;
+            margin-top: -46px !important;
+            margin-left: -6px;
+            padding-right: 7px;
+            color: #818795;
+        }
+
+        .nav-link:hover>.mdi,
+        .active>a>.mdi {
+            color: white !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-scroller">
+        <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+                <a class="navbar-brand brand-logo mr-5" href="index.html"><img src="/media/images/logo.png" class="mr-2"
+                        alt="logo" /></a>
+                <a class="navbar-brand brand-logo-mini" href="index.html"><img src="/media/images/logo-mini.jpeg"
+                        alt="logo" /></a>
+            </div>
+            <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                    <i class="mdi mdi-menu"></i>
+                </button>
+                <!-- <ul class="navbar-nav mr-lg-2">
+          <li class="nav-item nav-search d-none d-lg-block">
+            <div class="input-group">
+              <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
+                <span class="input-group-text" id="search">
+                  <i class="icon-search"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control" id="navbar-search-input" placeholder="Search now" aria-label="search" aria-describedby="search">
+            </div>
+          </li>
+        </ul> -->
+                <ul class="navbar-nav navbar-nav-right">
+                    <li class="nav-item nav-profile dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+                            <img src="/media/images/robot.png" alt="profile" style="border-radius: 25px;
+              background:#E23235;
+              padding: 1px;">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown"
+                            aria-labelledby="profileDropdown">
+                            <a class="dropdown-item" href="/logout">
+                                <i class="ti-power-off text-primary"></i>
+                                Logout
+                            </a>
+                        </div>
+                </ul>
+                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+                    data-toggle="offcanvas">
+                    <span class="icon-menu"></span>
+                </button>
+            </div>
+        </nav>
+
+        <div class="container-fluid page-body-wrapper">
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="mdi mdi-view-dashboard-outline"></i>
+                            <span class="menu-title">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/task/0">
+                            <i class="mdi mdi-numeric-0-box-outline" style="font-size: 2em;"></i>
+                            <span class="menu-title">Task0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/task/1">
+                            <i class="mdi mdi-numeric-1-box-outline" style="font-size: 2em;"></i>
+                            <span class="menu-title">Task1</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/task/2">
+                            <i class="mdi mdi-numeric-2-box-outline" style="font-size: 2em;"></i>
+                            <span class="menu-title">Task2</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/task/3">
+                            <i class="mdi mdi-numeric-3-box-outline" style="font-size: 2em;"></i>
+                            <span class="menu-title">Task3</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/task/4">
+                            <i class="mdi mdi-numeric-4-box-outline" style="font-size: 2em;"></i>
+                            <span class="menu-title">Task4</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/task/5">
+                            <i class="mdi mdi-numeric-5-box-outline" style="font-size: 2em;"></i>
+                            <span class="menu-title">Task5</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/task/6">
+                            <i class="mdi mdi-numeric-6-box-outline" style="font-size: 2em;"></i>
+                            <span class="menu-title">Task6</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/task/7">
+                            <i class="mdi mdi-numeric-7-box-outline" style="font-size: 2em;"></i>
+                            <span class="menu-title">Task7</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+            <div class="main-panel">
+                <div class="content-wrapper">
+
+                    <div class="row">
+                        <div class="col-md-6 grid-margin stretch-card">
+                            <div class="card">
+                                <canvas id="barChart"
+                                    style="min-height: 50vh;border:1px solid black; margin: 5px; border-radius: 5px;background-color: white; padding: 5px; box-shadow:3px 5px 3px 0px #777;padding: 10px;"></canvas>
+                            </div>
+
+                            <div class="col-md-6 grid-margin stretch-card">
+                                <div class="card">
+                                    <canvas id="doughnutChart"
+                                        style="min-height: 50vh;border:1px solid black; margin: 5px; border-radius: 5px;background-color:white;box-shadow:3px 5px 3px 0px #777;padding: 10px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <p class="card-title">Predicted Results</p>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="table-responsive">
+                                                <table id="table1" class="table table-hover table-bordered"
+                                                    style="width: 100%; cursor: pointer; text-align: center;border:1px solid black;margin-top: 10px;">
+                                                    <thead>
+                                                        <tr style="background-color: #030835; color: white;">
+                                                            <th id="teamIdHeader">Team_id</th>
+                                                            <th>Theme</th>
+                                                            <th>Prediction</th>
+                                                            <th id="confHeader">Confidence</th>
+                                                            <th>Login Count</th>
+                                                            <th>Last Login</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="table1Content">
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr style="background-color: #030835; color: white;">
+                                                            <th id="teamIdHeader">Team_id</th>
+                                                            <th>Theme</th>
+                                                            <th>Prediction</th>
+                                                            <th id="confHeader">Confidence</th>
+                                                            <th>Login Count</th>
+                                                            <th>Last Login</th>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <p class="card-title">Teams Submitted</p>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="table-responsive">
+                                                <table id="table2" class="table table-hover table-bordered" style="width: 100%; cursor: pointer; text-align: center;border:1px solid black;margin-top: 10px;">
+                                                    <thead>
+                                                      <tr style="background-color: #030835; color: white;">
+                                                          <th>Team_id</th>
+                                                          <th>Theme</th>
+                                                          <th>Date of Submission</th>
+                                                      </tr>
+                                                    </thead>
+                                                      <tbody id="table2Content">
+                                                      </tbody>
+                                                      <tfoot>
+                                                        <tr style="background-color: #030835; color: white;">
+                                                          <th>Team_id</th>
+                                                          <th>Theme</th>
+                                                          <th>Date of Submission</th>
+                                                      </tr>
+                                                      </tfoot>
+                                                  </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2021
+                            <a href="https://www.e-yantra.org/" target="_blank">e-Yantra </a>. All rights
+                            reserved.</span>
+                        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made
+                            with <i class="ti-heart text-danger ml-1"></i></span>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="/media/vendors/js/vendor.bundle.base.js"></script>
+    <script src="/media/vendors/chart.js/Chart.min.js"></script>
+    <script src="/media/js/off-canvas.js"></script>
+    <script src="/media/js/hoverable-collapse.js"></script>
+    <script src="/media/js/template.js"></script>
+    <script src="/media/js/dashboard.js"></script>
+    <script src="/media/js/Chart.roundedBarCharts.js"></script>
+    <script src="/media/js/index.js"></script>
+    <script>
+        localStorage.setItem("total", "{{total|escapejs}}")
+        localStorage.setItem("this_task", "{{this_task|escapejs}}")
+        localStorage.setItem("prev_task", "{{prev_task|escapejs}}")
+        localStorage.setItem("taskname", "{{taskname|escapejs}}")
+        // localStorage.setItem("json_data1","{{json_data|escapejs}}")
+        localStorage.setItem("sub_this_task", "{{sub_this_task|escapejs}}")
+    </script>
+</body>
+
+</html>

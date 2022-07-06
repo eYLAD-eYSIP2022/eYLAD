@@ -1,0 +1,63 @@
+.dt-buttons{
+    text-align: center !important;
+}
+
+tfoot{
+    font-size: 14px;
+}
+
+.table-title{
+    font-size: 25px;
+    position: absolute;
+    left: 50%;
+    margin-top: 10px;
+    transform: translate(-10%,0%);
+}
+.dt-button{
+    border-radius: 25px !important;
+    margin: 5px 10px 5px 10px !important;
+}
+.title-name{
+    font-size: 20px;
+}
+
+#table1_length{
+    display: flex;
+    justify-content: space-around;
+}
+.new_wrap{
+    display: flexbox;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+label{
+    display: block;
+}
+/* .dt-button{
+    margin: 5px;
+    padding: 0px 10px 0px 10px;
+    font-size: 16px;
+    border-radius: 20px;
+    
+}
+
+.buttons-pdf{
+    background-color: red;
+    color: white;
+}
+
+.buttons-excel{
+    background-color: green;
+    color: white;
+}
+
+.buttons-csv{
+    background-color: grey;
+    color: white;
+}
+
+.buttons-copy{
+    background-color: white;
+    color: black;
+} */

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>predictions</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    </head>
+<body onload="filter_theme()">
+    {% include 'usernavbar.html' %}
+    <div class="container" style="height: 300px; width: 300px;">
+        <canvas id="myChart" ></canvas> 
+    </div>
+    <div class="container" >
+    <div class="d-flex align-items-center" style="justify-content: space-around;">
+    <div > 
+        Select Team:
+        <select id="theme" onchange="filter_theme()" value="ALL">
+            <!-- <option value="sel">Select theme</option> -->
+            <option value="ALL">All Teams</option>
+            <option value="NB">NB</option>
+            <option value="SB">SB</option>
+            <option value="VB">VB</option>
+            <option value="SM">SM</option>
+            <option value="VD">VD</option>
+        </select>
+    </div>
+    <div id="spinner_home">Loading</div>
+    <button id="export" class="btn btn-success" style="border-radius: 30px;">Export to CSV <i class="bi bi-arrow-right"></i> </button>
+    <!-- <input type="number" id="userinput" placeholder="Enter team No" /> -->
+    <!-- <div class="spinner-border ms-auto text-light" id="statusSpin" role="status" aria-hidden="true"></div> -->
+    </div>
+    <div style="overflow: auto; max-width: 90vw; max-height: 50vh;">
+    <table id="table1" class="table table-hover table-bordered" style="width: 100%; cursor: pointer; text-align: center;">
+        <tr style="background-color: #030835; color: white;">
+            <th id="teamIdHeader">Team_id</th>
+            <th>Theme</th>
+            <th>Prediction</th>
+            <th id="confHeader">Confidence</th>
+        </tr>
+        <tbody id="tableContent">
+        </tbody>
+    </table>
+    </div>
+</div> 
+
+    <script>
+        localStorage.setItem("jsondata","{{json_data|escapejs}}")
+    </script>
+     <script src="/media/js/predict.js"></script>
+      
+</body>
