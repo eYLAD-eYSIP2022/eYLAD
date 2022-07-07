@@ -86,11 +86,17 @@ const updateOnChange_category = () =>{
     })
 }
 // console.log(topic_selector)
+// $('#table3-btn').on('click', function() {
+//     $('#table3').DataTable().destroy();
+// });
 
-
+var check = false;
 const updateOnChange_topic = () =>{
-    console.log(topic_selector.value)
-
+    // console.log(topic_selector.value)
+    if (check) {
+        $('#table3').DataTable().destroy();
+        console.log("Table Destroyed");
+    }    // table.destroy();
     $.ajax({
         // #### URL and datatype for ajax call
         url: `/get-seen-teams/${topic_selector.value}/`,
@@ -101,8 +107,8 @@ const updateOnChange_topic = () =>{
             let seen_teams = JSON.parse(suc_data.seen_teams)
             let unseen_teams=JSON.parse(suc_data.unseen_teams)
 
-            console.log({seen_teams,unseen_teams})
-            console.log(seen_teams.email)
+            // console.log({seen_teams,unseen_teams})
+            // console.log(seen_teams.email)
 
             let seen_list = Object.keys(seen_teams.theme).filter((val,index)=>{
                 if (nav_theme=="ALL") {
@@ -216,7 +222,7 @@ const updateOnChange_topic = () =>{
                 }
                 // console.log("inside the unseen loop")
             })
-
+            console.log("Added rows");
             // document.getElementById('table3Content').innerHTML = trHTML
             // $('#table3 tfoot th').each( function () {
             //     var title = $(this).text();
@@ -284,11 +290,11 @@ const updateOnChange_topic = () =>{
                 // table.ajax.reload();
             }
             else{
+                check = true
                 document.getElementById('table3Content').innerHTML = trHTML
-
                 table = $(`#table3`).DataTable({
                     dom: 'Blfrtip',
-                    destroy: true,
+                    // destroy: true,
                     // #### buttons for datatable download
                     buttons: [
                         'copyHtml5',
@@ -345,7 +351,7 @@ const updateOnChange_topic = () =>{
                     },
                     order: [[ 1, 'asc' ]]
                 });
-
+                console.log("Table reinitialized");
                 // To select/deselect "Seen teams" when checkbox in checked/unchecked
                 $('#seen-teams').click(function() {
                     console.log($('#seen-teams')[0].checked);
@@ -412,93 +418,140 @@ const updateOnChange_topic = () =>{
                     selected_teams=[];
                     var rows_selected = table.rows('.selected').data();
                     $.each(rows_selected,function(i,v){
-                        selected_teams.push(v);
+                        selected_teams.push([v[1], v[4]]);
                     });
                     console.log(selected_teams)
+                    document.getElementById("alertSubmit").disabled=true;
                 });
+
+                // $('#table3-btn').on('click', function() {
+                //     console.log("Exit AJAX!!");
+                //     return false
+                // });
             }
             var buttons = document.getElementsByClassName("dt-button")
-            setTimeout(() => {
+            // setTimeout(() => {
                 style_buttons(buttons);
                 style_table();
                 // set_in_line()
-            }, 2000);
-            // table.draw();
+            // }, 2000);
+            table.draw();
         }
     })
-    // document.getElementById("informed_teams").style.display="block"
+    document.getElementById("informed_teams").style.display="block"
     console.log(document.getElementById("informed_teams"))
 }
-// $('table3').DataTable(
-//     $('#table3 thead th').on('click', 'tr', function () {
-//         if ($(this).hasClass('selected')) {
-//             $(this).removeClass('selected');
-//         }
-//         else {
-//             $('#table3 tr.selected').removeClass('selected');
-//             $(this).addClass('selected');
-//         }
-//     })
-// )
 
-// // ########################################   Sending Email Reminder #########################################
-// const draft_mail = () => {
-
-// }
+function ValidateEmail(input) {
+    var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    console.log("Validate Email: ", input);
+    if (input.match(validRegex)) {
+        // alert("Valid email address!");
+        // document.form1.text1.focus();
+        return true;
+    } else {
+        // alert("Invalid email address!");
+        // document.form1.text1.focus();
+        return false;
+    }
+}
 
 // ########################################   Alert To confirm the "Team IDs"   #########################################
 $('#alertEmail').on('show.bs.modal', function (event) {
     console.log("Selected Teams: ", selected_teams);
-    document.getElementById("alertButton").innerHTML = `Total of ${selected_teams.length} teams selected`;
+    // selected_teams_len = selected_teams.length
+    document.getElementById("alertTitle").innerHTML = `Total of ${selected_teams.length} team(s) selected`;
     console.log("Selected teams length: ", selected_teams.length);
-    var tpHTML = '';
+    var rejected_email = '';
+    // var num_rejected_email = 0;
+    var accepted_email_list = []
+    var accepted_email = '';
+    // for (var i = 0; i < (selected_teams_len-num_rejected_email); i++) { 
+    //     console.log("Looping on: ", selected_teams[i]);
+    //     if(ValidateEmail(selected_teams[i][1])) {
+    //         console.log("Accepted Email", selected_teams[i]);
+    //         accepted_email += '<li class="list-group-item">'+ selected_teams[i][0] +'</li>';
+    //     }
+    //     else {
+    //         rejected_email += '<li class="list-group-item">'+ selected_teams[i][0] +'</li>';
+    //         console.log("Rejected Email", selected_teams.splice(i, 1));
+    //         // console.log(selected_teams);
+    //         num_rejected_email += 1
+    //     }
+    // }
     Object.keys(selected_teams).forEach((val,index)=>{
-        tpHTML += '<li class="list-group-item">'+ selected_teams[index][1] +'</li>';
+        // tpHTML += '<li class="list-group-item">'+ selected_teams[index][0] +'</li>';
+        // Filtering faulty emails
+        console.log("Looping on: ", selected_teams[index]);
+        if(ValidateEmail(selected_teams[index][1])) {
+            accepted_email_list.push(selected_teams[index])
+            console.log("Accepted Email", selected_teams[index]);
+            // accepted_email += '<li class="list-group-item">'+ selected_teams[index][0] +'</li>';
+        }
+        else {
+            rejected_email += '<li class="list-group-item">'+ selected_teams[index][0] +'</li>';
+            console.log("Rejected Email", selected_teams[index]);
+            // console.log(selected_teams);
+            // num_rejected_email += 1
+        }
     })
-    document.getElementById("alertBody").innerHTML=tpHTML;
-    if (selected_teams.length > 0) {
+    document.getElementById("rejectedEmailBtn").innerHTML=`Number of emails rejected: ${ (selected_teams.length)-(accepted_email_list.length) }`;
+    // document.getElementById("acceptedEmailBtn").innerHTML=`Number of emails accepted: ${ (accepted_email_list.length) }`;
+    // document.getElementById("alertBody").innerHTML=tpHTML;
+    // document.getElementById("acceptedEmailList").innerHTML=accepted_email;
+    document.getElementById("rejectedEmailList").innerHTML=rejected_email;
+    console.log(accepted_email_list);
+    if (accepted_email_list.length > 0) {
         document.getElementById("alertSubmit").disabled=false;
+        // document.getElementById("draftEmail-cc").multiple = true;
+        // document.getElementById("draftEmail-bcc").multiple = true;
     }
 });
 
-// ########################################   Drafting the Reminder Email #########################################
-$('#draftEmail').on('shown.bs.modal', function (event) {
-    console.log("Selected Teams: ", selected_teams);
-    console.log("Selected teams length: ", selected_teams.length);
-    // var button = $(event.relatedTarget) // Button that triggered the modal
-    // var recipient = button.data('whatever') // Extract info from data-* attributes
-    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-    // var modal = $(this)
-    // modal.find('.modal-title').text('New message to ' + recipient)
-    // modal.find('.modal-body input').val(recipient)
-    // modal.find('#email').val(recipient);
-    // if (! (( $('#draftEmail-sub').is(':empty') ) && ( $('#draftEmail-msg').is(':empty') )) ) {
-        // $('draftEmailSubmit').prop('disabled', false);
-        // document.getElementById("draftEmailSubmit").disabled=false;
-        // console.log("Enable button");
-    // }
-});
-
+// For form validation, add "needs-validation" to the form tag and "required" to input tag
+//    to skip validation add class "no-validate" to that particulat input tag 
 (function () {
     'use strict'
-
     // Fetch all the forms we want to apply custom Bootstrap validation styles to
     var forms = document.querySelectorAll('.needs-validation')
+    var btn = document.getElementById('draftEmailSubmit')
 
     // Loop over them and prevent submission
     Array.prototype.slice.call(forms)
         .forEach(function (form) {
-        form.addEventListener('submit', function (event) {
+        btn.addEventListener('click', function (event) {
             if (!form.checkValidity()) {
             event.preventDefault()
             event.stopPropagation()
             }
-
             form.classList.add('was-validated')
         }, false)
         })
 })()
+
+// AJAX to send data for the email to views.py
+$('#draftEmailSubmit').on('click', function() {
+    var cc = $('#draftEmail-cc').val();
+    var bcc = $('#draftEmail-bcc').val();
+    var sub = $('#draftEmail-sub').val();
+    var msg = $('#draftEmail-msg').val();
+    console.log(cc, "\n", bcc, "\n", sub, msg)
+    $.ajax({
+        type: 'POST',
+        url: '/email/',
+        // data: {csrfmiddlewaretoken: window.CSRF_TOKEN},
+        data: {
+            'emails': JSON.stringify(accepted_email_list),
+            'cc': cc,
+            'bcc': bcc,
+            'sub': sub,
+            'msg': msg,
+            // '{{ csrf_token }}':csrfmiddlewaretoken,
+        },
+    }).done(function(data) {
+        console.log(data);
+    });
+});
 
 // ########################################   Doughnut Chart Start #########################################
 let BarchartData = [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]

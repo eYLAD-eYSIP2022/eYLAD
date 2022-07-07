@@ -1,6 +1,5 @@
 from functools import lru_cache
-from tkinter import FLAT
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from .models import *
 from json import dumps
@@ -16,6 +15,9 @@ from requests.structures import CaseInsensitiveDict
 import os
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import EmailMultiAlternatives, EmailMessage
+from backend import settings
 
 # Create your views here.
 import pickle
@@ -135,6 +137,15 @@ def logout(request):
 
 #### function for dashboard
 def dashboard(request):
+
+    # # Sending Emails to teams
+    # if request.method == "POST":
+    #     print("\n\n\n########################$$$$$$$$$$\n")
+    #     print(request)
+    #     print(request.POST.get("cc"))
+    #     print(request.POST.get("bcc"))
+    #     print(request.POST.get("sub"))
+    #     print(request.POST.get("msg"))
 
     # cur = connections["discourse"].cursor()
     # discourse_query = "SELECT DISTINCT topics.id,topics.title,topics.category_id,categories.name from topics,categories,users where topics.category_id=categories.id  AND topics.user_id=users.id AND users.moderator is true order by  categories.name;"
@@ -1744,3 +1755,27 @@ def get_teams_seen(request, topic_id):
     ust = unseen_teams.to_json()
 
     return JsonResponse({"seen_teams": st, "unseen_teams": ust})
+
+@csrf_exempt
+def email(request):
+    emails = []
+    email_dump = request.POST.getlist('emails')
+    email_dump = list(email_dump[0].split(','))
+    for i in range(len(email_dump)):
+        if i%2 == 0:
+            continue
+        e = email_dump[i]
+        emails.append(e[e.find('"')+1:e.rfind('"')])
+    cc = request.POST.getlist('cc')
+    cc = list(cc[0].split(','))
+    bcc = request.POST.getlist('bcc')
+    bcc = list(bcc[0].split(','))
+    sub = request.POST.getlist('sub')
+    msg = request.POST.getlist('msg')
+    print("\n##################\n")
+    print(emails, "\n", cc, "\n", bcc, "\n", sub, "\n", msg)
+    # message1 = ('Check', 'Check Check Check Check', settings.EMAIL_HOST_USER, ['manik.4716412819@ipu.ac.in', 'kunnaal007@gmail.com'])
+    # message2 = ('Another Subject', 'Here is another message', 'from@example.com', ['second@test.com'])
+    msg = EmailMessage(sub[0], msg[0], settings.EMAIL_HOST_USER, emails, bcc=bcc, cc=cc)
+    msg.send(fail_silently=False)
+    return HttpResponse('Success')

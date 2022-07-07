@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
+from . email import *
+
+EMAIL_USE_TLS = EMAIL_USE_TLS
+EMAIL_HOST = EMAIL_HOST
+EMAIL_HOST_USER = EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
+EMAIL_PORT = EMAIL_PORT
 
 # following imports are required by Aishwarya, comment out if not needed for others
 # import pymysql
@@ -35,7 +42,10 @@ else:
 
 
 # ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]  
+if DEBUG == True:
+    ALLOWED_HOSTS = ["*"]
+else:
+    ALLOWED_HOSTS = []  
 
 # Application definition
 

@@ -16,5 +16,6 @@ urlpatterns = [
     path('feedbacktrack/<int:id>/', views.feedbackTrack, name="feedbackTrack"),########### URL FOR AJAX  ##########
     # url(r'^allowances_mas/(?P<pk>\d+)/$', AllowanceAPIView.as_view()),
     path('dashboard/',views.dashboard, name="dashboard"), ############# DASHBOARD PAGE ##############
+    path('email/', views.email, name="email"),
     # path('temp/',views.temp, name="temp"),
 ]

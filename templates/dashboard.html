@@ -95,6 +95,12 @@
       text-decoration-line: line-through !important;
     }
 
+    .form-control.no-validate:valid {
+      border-color: #ced4da;
+      padding-right: .75rem;
+      background: none !important; 
+    }
+
   </style> 
 </head>
 <body>
@@ -279,10 +285,10 @@
                     </div>
                   </div>
                   <div class="row justify-content-sm-center ml-2 mr-sm-l my-2"> 
-                    <button class="btn btn-success" onclick="updateOnChange_topic()" style="max-width: 130px; ">Search Data</button>
+                    <button id="table3-btn" class="btn btn-success" onclick="updateOnChange_topic()" style="max-width: 130px; ">Search Data</button>
                   </div>
                 </div>
-                {% comment %} <div id="informed_teams" style="display:none;"> {% endcomment %}
+                <div id="informed_teams" style="display:none;">
                   <div class="row">
                     <div class="col-12" style="text-align:center;">
                       <canvas id="barChart2" style="display:inline !important; max-width: 65%"></canvas>
@@ -342,7 +348,7 @@
                         <div class="modal-dialog" role="document" style="margin-top:10px;">
                           <div class="modal-content" style="max-height:38rem;">
                             <div class="modal-header" style="padding:20px 25px;">
-                              <h5 class="modal-title">Confirm the Team ID(s)</h5>
+                              <h5 id="alertTitle" class="modal-title">Confirm the Team ID(s)</h5>
                               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                               </button>
@@ -350,14 +356,25 @@
                             <div class="modal-body" style="padding:10px 30px; overflow:auto;">
                               <div class="accordion" id="accordionExample">
                                 <div class="card">
-                                  <div class="card-header">
+                                  {% comment %} <div class="card-header">
                                     <h2 class="mb-0">
-                                      <button id="alertButton" class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="color:#760057;"></button>
+                                      <button id="acceptedEmailBtn" class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="color:#760057;"></button>
                                     </h2>
                                   </div>
                                   <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
                                     <div class="card-body">
-                                      <ol class="list-group list-group-numbered" id="alertBody"></ol>
+                                      <ol class="list-group list-group-numbered" id="acceptedEmailList"></ol>
+                                    </div>
+                                  </div> {% endcomment %}
+                                  {% comment %} <hr> {% endcomment %}
+                                  <div class="card-header">
+                                    <h2 class="mb-0">
+                                      <button id="rejectedEmailBtn" class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseOne" style="color:#760057;"></button>
+                                    </h2>
+                                  </div>
+                                  <div id="collapseTwo" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                    <div class="card-body">
+                                      <ol class="list-group list-group-numbered" id="rejectedEmailList"></ol>
                                     </div>
                                   </div>
                                 </div>
@@ -382,25 +399,24 @@
                               </button>
                             </div>
                             <div class="modal-body" style="padding:10px 30px;">
-                              <form class="needs-validation" novalidate>
+                              <form class="needs-validation" method="POST" novalidate>
+                                {% comment %} {% csrf_token %} {% endcomment %}
                                 <div class="form-group mb-3">
                                   <label for="recipient-name" class="col-form-label" style="margin-bottom:0px; padding-bottom:5px;">To</label>
-                                  <input type="email" class="form-control mb-2" id="draftEmail-cc" placeholder="cc" style="padding:5px 10px; height:35px;">
-                                  <input type="email" class="form-control" id="draftEmail-bcc" placeholder="bcc" style="padding:5px 10px; height:35px;">
+                                  <input name="cc" type="email" class="form-control no-validate mb-2" id="draftEmail-cc" placeholder="cc" aria-describedby="CC" style="padding:5px 10px; height:35px;" multiple="true">
+                                  <input name="bcc" type="email" class="form-control no-validate" id="draftEmail-bcc" placeholder="bcc" aria-describedby="BCC" style="padding:5px 10px; height:35px;" multiple="true">
                                 </div>
                                 <div class="form-group mb-3">
                                   <label for="recipient-name" class="col-form-label req" style="margin-bottom:0px; padding-bottom:5px;">Subject</label>
-                                  <input type="text" required class="form-control" id="draftEmail-sub" placeholder="Subject" style="padding:5px 10px; height:35px;">
+                                  <input name="sub" type="text" class="form-control" id="draftEmail-sub" placeholder="Subject" style="padding:5px 10px; height:35px;" required>
+                                  <div class="invalid-feedback"> Required !! </div>
                                 </div>
-                                {% comment %} <div class="form-group">
-                                  <label for="recipient-name" class="col-form-label">Recipient:</label>
-                                  <input type="text" class="form-control" id="recipient-name">
-                                </div> {% endcomment %}
                                 <div class="form-group">
                                   <label for="message-text" class="col-form-label req" style="margin-bottom:0px; padding-bottom:5px;">Message</label>
-                                  <textarea class="form-control" required placeholder="Message" id="draftEmail-msg" style="min-height:145px;"></textarea>
-                                  <button type="button" id="draftEmailSubmit" class="btn btn-primary">Send</button>
+                                  <textarea name="msg" class="form-control" placeholder="Message" id="draftEmail-msg" style="min-height:145px;" required></textarea>
+                                  <div class="invalid-feedback"> Required !! </div>
                                 </div>
+                                <button type="button" id="draftEmailSubmit" class="btn btn-primary" data-dismiss="modal">Send</button>
                               </form>
                             </div>
                             <div class="modal-footer">
@@ -409,9 +425,10 @@
                           </div>
                         </div>
                       </div>
+
                     </div>
                   </div>
-                {% comment %} </div> {% endcomment %}
+                </div>
 
               </div>
             </div>
@@ -427,6 +444,7 @@
   <script src="/media/js/off-canvas.js"></script>
   <script src="/media/js/hoverable-collapse.js"></script>
   <script src="/media/js/template.js"></script>
+  <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
   <script src="/media/js/dashboard.js"></script>
 
   <script>
