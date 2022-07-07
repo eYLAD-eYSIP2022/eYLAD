@@ -28820,13 +28820,23 @@ div.tagsinput span.tag a {
   transition: all 0.25s ease-out;
 }
 
+<<<<<<< HEAD
 @media screen and (max-width: 991px) {
   .sidebar-offcanvas {
     right: -235px;
   }
   .sidebar-offcanvas.active {
     right: 0;
+=======
+.sidebar-offcanvas {
+  @media screen and (max-width: 991px) {
+  right: -235px;
+>>>>>>> 1104ab2c987f7f14f4bf5229cf420a666e0d3299
   }
+}
+
+.sidebar-offcanvas.active {
+  right: 0;
 }
 
 /* Navbar */
