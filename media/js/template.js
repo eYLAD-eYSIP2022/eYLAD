@@ -117,3 +117,80 @@
   });
   
 })(jQuery);
+
+{/******************************  Info modal script begins  *******************************/}
+$(document).ready(function() {
+  prep_modal();
+});
+
+function prep_modal()
+{
+  $("#exampleModal").each(function() {
+  var pages = $('#exampleModal').find('.modal-split');
+  var page_track = 0;
+  $("#modalPageNo").html(1+"/"+pages.length);
+
+  if (pages.length != 0)
+  {
+      pages.hide();
+      pages.eq(0).show();
+      $("#helpBack").hide();
+      $("#helpClose").hide();
+      
+      $("#helpNext").click(function() {
+        $('#exampleModal').blur();
+        if(page_track == 0)
+        {
+          $("#helpBack").show();
+        }
+        if(page_track == pages.length-2)
+        {
+          $("#helpNext").hide();
+          $("#helpClose").show();
+        }
+        if(page_track < pages.length-1)
+        {
+          page_track++;
+          pages.hide();
+          pages.eq(page_track).show();
+        }
+        if(page_track>3) $("#exampleModalLabel").html("Task-wise Page");
+        else $("#exampleModalLabel").html("Dashboard");
+        $("#modalPageNo").html((page_track+1)+"/"+pages.length);
+      });
+
+      $("#helpBack").click(function() {
+        if(page_track == 1)
+        {
+          $("#helpBack").hide();
+        }
+        if(page_track == pages.length-1)
+        {
+          $("#helpClose").hide();
+          $("#helpNext").show();
+        }
+        if(page_track > 0)
+        {
+          page_track--;
+          pages.hide();
+          pages.eq(page_track).show();
+        }
+        if(page_track>3) $("#exampleModalLabel").html("Task-wise Page");
+        else $("#exampleModalLabel").html("Dashboard");
+        $("#modalPageNo").html((page_track+1)+"/"+pages.length);
+      });
+
+      $("#helpClose").click(function() {
+          page_track=0;
+          $("#helpClose").hide();
+          $("#helpNext").show();
+          $("#helpBack").hide();   
+          pages.hide();
+          pages.eq(0).show();
+          $("#modalPageNo").html((page_track+1)+"/"+pages.length);
+          $("#exampleModalLabel").html("Dashboard");                         
+      });
+  }
+});
+}
+{/******************************  Info modal script ends  *******************************/}
