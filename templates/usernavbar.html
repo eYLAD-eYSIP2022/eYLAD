@@ -5,13 +5,13 @@
     <a class="navbar-brand brand-logo mr-5" href="https://www.portal.e-yantra.org/"><img src="/media/images/logo.png" class="mr-2"
         alt="logo" /></a>
     <!-- small logo for navbar closed -->
-    <a class="navbar-brand brand-logo-mini" href="https://www.portal.e-yantra.org/"><img src="/media/images/logo-mini.jpeg"
+    <a class="navbar-brand brand-logo-mini" href="https://www.portal.e-yantra.org/" style="margin-right:0"><img src="/media/images/logo-mini.jpeg"
         alt="logo" /></a>
   </div>
-  <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+  <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end" style="padding-left:0">
     <!-- button to toggle open and close navbar -->
-    <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-      <i class="mdi mdi-menu"></i>
+    <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize" style="margin-left: 5px; margin-right: 5px;">
+      <i class="mdi mdi-menu" style="font-size: 25px;"></i>
     </button>
 
     {% comment %} <div id="nav_btn" class="btn-group" style="padding:10px;"> {% endcomment %}
@@ -38,7 +38,7 @@
         <select id="main_theme" onchange="theme_change()" 
           style="width: fit-content;
                   border-radius: 10px;
-                  max-width: 17%;
+                  max-width: 19%;
                   color: #000;
                   background-color: #ffffff;
                   border-color: #a3a4a5;
@@ -55,6 +55,12 @@
         </select>
       {% comment %} </div> {% endcomment %}
     {% comment %} </div> {% endcomment %}
+
+  <!-- button to open help modal-->
+  <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal" style="width: fit-content; padding: 8px">
+    <i class="ti-info text-primary"></i>
+    Info
+  </button>
 
     <ul class="navbar-nav navbar-nav-right">
       <li class="nav-item nav-profile ">
@@ -139,3 +145,70 @@
 
     </ul>
   </nav>
+
+  <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow: visible;">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content" style="bottom: 70px; height: fit-content;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Dashboard</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="overflow: auto;">
+        <div class="modal-split">
+		      <h6>Predictions for current task and Discourse Statistics</h6>
+          <img src="\media\images\help\slide-1.png" alt="Doughtnut Chart and Discourse Stats" width="100%">
+          <b>Note:</b> The model uses task feedback as one of the parameters. If Task 1 feedback is not received, then predictions are not available for Task 2.
+		    </div>
+		    <div class="modal-split">
+		      <h6>Task and Themewise feedback</h6>
+          <img src="\media\images\help\slide-2.png" alt="Feedback Plots" width="100%">
+          Click on the drop-down list to select particular task.<br>
+          To know more about boxplots, click <a href="https://byjus.com/maths/box-plot/#parts" target="_blank">here</a>.
+		    </div>
+        <div class="modal-split">
+          <h6>Informed Teams Counter</h6>
+          <img src="\media\images\help\slide-3.png" alt="Informed Teams Counter" width="100%">
+          This provides a topic-wise view count for instructor posts on Discourse. The count displayed is for the unique no. of teams that have seen/not seen a task/post/announcement.
+You can download the details of these teams in various file formats and take necessary measures (such as sending emails to teams that have not seen a post)
+
+        </div>
+        <div class="modal-split">
+          <h6>Informed Teams Counter</h6>
+          <img src="\media\images\help\slide-4.png" alt="Informed Teams Counter" width="100%">
+          <b>Note:</b> As you see from the figure below, similar post titles for various themes are not directly identifiable to which theme they belong to. 
+          Hence, it is suggested that you change the category name on discourse for all categories by simply padding the theme acronym (example: SM: Task 0 shown below). 
+        </div>
+        <div class="modal-split">
+          <h6>Submission Statistics and Predictions for the Task</h6>
+          <img src="\media\images\help\slide-5.png" alt="Submission Stats and Predictions" width="100%">
+          The bar chart displays submission statistics of current task compared to previous tasks, distinguished by themes.
+           The doughnut chart displays the model prediction for current task.
+        </div>
+        <div class="modal-split">
+		      <h6>Model Metrics and Login Activity on eYRC portal</h6>
+          <img src="\media\images\help\slide-6.png" alt="Model Metrics and Login Activity" width="100%">
+          This section displays Machine Learning model metrics for that particular task and login activity on Discourse forum during its timeline.
+          <br>To know more about model metrics, click <a href="https://www.geeksforgeeks.org/metrics-for-machine-learning-model/" target=""_blank"">here</a>.
+		    </div>
+		    <div class="modal-split">
+		      <h6>Task-wise and Question-wise Feedback (to understand the feedback on same parameter over the tasks):
+          </h6>
+          <img src="\media\images\help\slide-7.png" alt="Task-wise and Question-wise feedback" width="100%">
+		    </div>
+        <div class="modal-split">
+          <h6>Team-wise Prediction and Contact Details</h6>
+          <img src="\media\images\help\slide-8.png" alt="Prediction and Contact DataTable" width="100%">
+          This provides team-wise predictions for the given task. You may sort/filter and choose your own threshold for confidence level. 
+          Team contacts are also available in this table for taking necessary measures.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="mr-auto" id="modalPageNo"></div>
+        <button type="button" class="btn btn-primary" id="helpBack">Back</button>
+        <button type="button" class="btn btn-primary" id="helpNext">Next</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="helpClose">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
