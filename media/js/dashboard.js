@@ -33,6 +33,7 @@ var key_value = {
 };
 // Selected Teams list for sendinf emails
 var selected_teams=[];
+var accepted_email_list=[];
 
 let nav_theme = document.getElementById("main_theme").value;
 // doughnutChart();
@@ -85,18 +86,12 @@ const updateOnChange_category = () =>{
         }
     })
 }
-// console.log(topic_selector)
-// $('#table3-btn').on('click', function() {
-//     $('#table3').DataTable().destroy();
-// });
 
-var check = false;
 const updateOnChange_topic = () =>{
     // console.log(topic_selector.value)
-    if (check) {
-        $('#table3').DataTable().destroy();
-        console.log("Table Destroyed");
-    }    // table.destroy();
+    $('#table3').DataTable().clear();
+    document.getElementById("informed_teams").style.display="none";
+    document.getElementById("informed_teams_loader").style.display="block";
     $.ajax({
         // #### URL and datatype for ajax call
         url: `/get-seen-teams/${topic_selector.value}/`,
@@ -107,7 +102,7 @@ const updateOnChange_topic = () =>{
             let seen_teams = JSON.parse(suc_data.seen_teams)
             let unseen_teams=JSON.parse(suc_data.unseen_teams)
 
-            // console.log({seen_teams,unseen_teams})
+            console.log({seen_teams,unseen_teams})
             // console.log(seen_teams.email)
 
             let seen_list = Object.keys(seen_teams.theme).filter((val,index)=>{
@@ -195,6 +190,7 @@ const updateOnChange_topic = () =>{
             })
             // ########################################   Bar Chart Ends #########################################
             var trHTML = '';
+            // console.log(trHTML);
             Object.keys(seen_teams.team_id).forEach((val,index)=>{
 
                 if (nav_theme=="ALL"||seen_teams.theme[val]==nav_theme) {
@@ -223,238 +219,214 @@ const updateOnChange_topic = () =>{
                 // console.log("inside the unseen loop")
             })
             console.log("Added rows");
-            // document.getElementById('table3Content').innerHTML = trHTML
-            // $('#table3 tfoot th').each( function () {
-            //     var title = $(this).text();
-            //     $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
-            // } );
-            // console.log(trHTML)
-            if(table){
-                // document.getElementById('table3Content').innerHTML = trHTML
-                // $('#table3').DataTable().destroy();
-                // document.getElementById('table3Content').innerHTML = ""
-                // $('#table3').find('tbody').append(trHTML);
-                // $('#table3').DataTable({
-                //     dom: 'Blfrtip',
-                //     destroy: true,
-                //     // #### buttons for datatable download
-                //     buttons: [
-                //         'copyHtml5',
-                //         {
-                //             extend: 'pdfHtml5',
-                //             title: function () { return getPredText(); }
-                //         },
-                //         {
-                //             extend: 'excelHtml5',
-                //             title: function () { return getPredText(); }
-                //         },
-                //         {
-                //             extend: 'csvHtml5',
-                //             title: function () { return getPredText(); }
-                //         },
-                //     ],
-                //     "paging": true,
-                //     responsive: true,
-                //     "lengthChange": true,
-                //     "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-                //     "pageLength": 10,
-                //     "pagingType": "full_numbers",
-                //     // #### for search bar in footer
-                //     initComplete: function () {
-                //         // #### Apply the search
-                //         this.api().columns().every( function () {
-                //             var that = this;
+            $('#unseen-teams')[0].checked=false;
+            $('#seen-teams')[0].checked=false;
+            table = $(`#table3`).DataTable({
+                dom: 'Blfrtip',
+                destroy: true,
+                // #### buttons for datatable download
+                buttons: [
+                    'copyHtml5',
+                    {
+                        extend: 'pdfHtml5',
+                        title: function () { return getPredText(); }
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        title: function () { return getPredText(); }
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        title: function () { return getPredText(); }
+                    },
+                ],
+                "paging": true,
+                responsive: true,
+                "lengthChange": true,
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "pageLength": 10,
+                "pagingType": "full_numbers",
+                "language": {
+                    oPaginate: {
+                        sFirst: '<<',
+                        sLast: '>>'
+                    }
+                    } ,
+                // #### for search bar in footer
+                initComplete: function () {
+                    // #### Apply the search
+                    this.api().columns().every( function () {
+                        var that = this;
             
-                //             $( 'input', this.footer() ).on( 'keyup change clear', function () {
-                //                 if ( that.search() !== this.value ) {
-                //                     that
-                //                         .search( this.value )
-                //                         .draw();
-                //                 }
-                //             } );
-                //         } );
-                //     },
-                //     columnDefs: [ {
-                //         orderable: false,
-                //         className: 'select-checkbox',
-                //         targets:   0
-                //     } ],
-                //     select: {
-                //         style:    'os',
-                //         selector: 'td:first-child'
-                //     },
-                //     order: [[ 1, 'asc' ]]
-                // }).draw();
-                // table.clear();
-                // table.draw()
-                // table.ajax.reload();
-            }
-            else{
-                check = true
-                document.getElementById('table3Content').innerHTML = trHTML
-                table = $(`#table3`).DataTable({
-                    dom: 'Blfrtip',
-                    // destroy: true,
-                    // #### buttons for datatable download
-                    buttons: [
-                        'copyHtml5',
-                        {
-                            extend: 'pdfHtml5',
-                            title: function () { return getPredText(); }
-                        },
-                        {
-                            extend: 'excelHtml5',
-                            title: function () { return getPredText(); }
-                        },
-                        {
-                            extend: 'csvHtml5',
-                            title: function () { return getPredText(); }
-                        },
-                    ],
-                    "paging": true,
-                    responsive: true,
-                    "lengthChange": true,
-                    "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-                    "pageLength": 10,
-                    "pagingType": "full_numbers",
-                    "language": {
-                        oPaginate: {
-                        //    sNext: '<i class="fa fa-forward"></i>',
-                        //    sPrevious: '<i class="fa fa-backward"></i>',
-                           sFirst: '<<',
-                           sLast: '>>'
-                        }
-                      } ,
-                    // #### for search bar in footer
-                    initComplete: function () {
-                        // #### Apply the search
-                        this.api().columns().every( function () {
-                            var that = this;
-                
-                            $('#table3_filter', this.footer() ).on( 'keyup change clear', function () {
-                                if( that.search() !== this.value ) {
-                                    that
-                                        .search( this.value )
-                                        .draw();
-                                }
-                            });
+                        $('#table3_filter', this.footer() ).on( 'keyup change clear', function () {
+                            if( that.search() !== this.value ) {
+                                that
+                                    .search( this.value )
+                                    .draw();
+                            }
                         });
-                    },
-                    columnDefs: [ {
-                        orderable: false,
-                        className: 'select-checkbox',
-                        targets:   0
-                    } ],
-                    select: {
-                        style:    'multi',
-                        selector: 'td:first-child'
-                    },
-                    order: [[ 1, 'asc' ]]
-                });
-                console.log("Table reinitialized");
-                // To select/deselect "Seen teams" when checkbox in checked/unchecked
-                $('#seen-teams').click(function() {
-                    console.log($('#seen-teams')[0].checked);
-                    if ($('#seen-teams')[0].checked) {
-                        table.rows('.seen').select();
-                    }
-                    else {
-                        table.rows('.seen').deselect();
-                    }
-                });
+                    });
+                },
+                columnDefs: [ {
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets:   0
+                } ],
+                select: {
+                    style:    'multi',
+                    selector: 'td'
+                },
+                order: [[ 1, 'asc' ]],
 
-                // To select/deselect "Unseen teams" when checkbox in checked/unchecked
-                $('#unseen-teams').click(function() {
-                    console.log($('#unseen-teams')[0].checked);
-                    if ($('#unseen-teams')[0].checked) {
-                        table.rows('.unseen').select();
-                    }
-                    else {
-                        table.rows('.unseen').deselect();
-                    }
-                });
-                
-                $('#MyTableCheckAllButton').click(function() {
-                    if (table.rows({
+            });
+
+            Object.keys(seen_teams.team_id).forEach((val,index)=>{
+                if (nav_theme=="ALL"||seen_teams.theme[val]==nav_theme) {
+                    var temp = [];
+                    temp.push('<td></td>');
+                    temp.push(seen_teams.team_id[val]);
+                    temp.push('Seen by teams');
+                    temp.push(seen_teams.name[val]);
+                    temp.push(seen_teams.email[val]);
+                    temp.push(seen_teams.contact[val]);
+                    var tmp = table.row.add(temp).node();
+                    // console.log(tmp);
+                    $(tmp).addClass("table-success seen");
+                }
+            }); 
+            
+            Object.keys(unseen_teams.team_id).forEach((val,index)=>{
+                if (nav_theme=="ALL"||unseen_teams.theme[val]==nav_theme) {
+                    var temp = [];
+                    temp.push('<td></td>');
+                    temp.push(unseen_teams.team_id[val]);
+                    temp.push('Unseen by teams');
+                    temp.push(unseen_teams.name[val]);
+                    temp.push(unseen_teams.email[val]);
+                    temp.push(unseen_teams.contact[val]);
+                    var tmp = table.row.add(temp).node();
+                    // console.log(tmp);
+                    $(tmp).addClass("table-danger unseen");
+                }
+            }); 
+
+            console.log("Table reinitialized");
+            // To select/deselect "Seen teams" when checkbox in checked/unchecked
+            $('#seen-teams').click(function() {
+                console.log($('#seen-teams')[0].checked);
+                if ($('#seen-teams')[0].checked) {
+                    table.rows('.seen').select();
+                }
+                else {
+                    table.rows('.seen').deselect();
+                }
+            });
+
+            // To select/deselect "Unseen teams" when checkbox in checked/unchecked
+            $('#unseen-teams').click(function() {
+                console.log($('#unseen-teams')[0].checked);
+                if ($('#unseen-teams')[0].checked) {
+                    table.rows('.unseen').select();
+                }
+                else {
+                    table.rows('.unseen').deselect();
+                }
+            });
+            
+            $('#MyTableCheckAllButton').click(function() {
+                if (table.rows({
+                        selected: true
+                    }).count() > 0) {
+                    table.rows().deselect();
+                    $('#unseen-teams')[0].checked=false;
+                    $('#seen-teams')[0].checked=false;
+                    return;
+                }
+                table.rows().select();
+            });
+        
+            table.on('select deselect', function(e, dt, type, indexes) {
+                if (type === 'row') {
+                    // We may use dt instead of myTable to have the freshest data.
+                    if (dt.rows().count() === dt.rows({
                             selected: true
-                        }).count() > 0) {
-                        table.rows().deselect();
-                        $('#unseen-teams')[0].checked=false;
-                        $('#seen-teams')[0].checked=false;
+                        }).count()) {
+                        // Deselect all items button.
+                        $("#table-checkbox").attr('d', 'M19,19H5V5H15V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V11H19M7.91,10.08L6.5,11.5L11,16L21,6L19.59,4.58L11,13.17L7.91,10.08Z');
+                        $('#seen-teams').prop('checked', true);
+                        $('#unseen-teams').prop('checked', true);
+                        // console.log("Select All " , $('#seen-teams')[0].checked);
                         return;
                     }
-                    table.rows().select();
-                });
-            
-                table.on('select deselect', function(e, dt, type, indexes) {
-                    if (type === 'row') {
-                        // We may use dt instead of myTable to have the freshest data.
-                        if (dt.rows().count() === dt.rows({
-                                selected: true
-                            }).count()) {
-                            // Deselect all items button.
-                            $("path").attr('d', 'M19,19H5V5H15V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V11H19M7.91,10.08L6.5,11.5L11,16L21,6L19.59,4.58L11,13.17L7.91,10.08Z');
-                            $('#seen-teams').prop('checked', true);
-                            $('#unseen-teams').prop('checked', true);
-                            // console.log("Select All " , $('#seen-teams')[0].checked);
-                            return;
-                        }
-            
-                        if (dt.rows({
-                                selected: true
-                            }).count() === 0) {
-                            // Select all items button.
-                            $("path").attr("d", "M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z");
-                            // console.log("Deselect All ", $('#seen-teams')[0].checked);
-                            return;
-                        }
-            
-                        // Deselect some items button.
-                        $("path").attr('d', 'M19,19V5H5V19H19M19,3A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5C3,3.89 3.9,3 5,3H19M17,11V13H7V11H17Z');
+        
+                    if (dt.rows({
+                            selected: true
+                        }).count() === 0) {
+                        // Select all items button.
+                        $("#table-checkbox").attr("d", "M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z");
+                        // console.log("Deselect All ", $('#seen-teams')[0].checked);
+                        return;
                     }
-                });
+        
+                    // Deselect some items button.
+                    $("#table-checkbox").attr('d', 'M19,19V5H5V19H19M19,3A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5C3,3.89 3.9,3 5,3H19M17,11V13H7V11H17Z');
+                }
+            });
 
-                $("#draft-mail").click(function(){
-                    selected_teams=[];
-                    var rows_selected = table.rows('.selected').data();
-                    $.each(rows_selected,function(i,v){
-                        selected_teams.push([v[1], v[4]]);
-                    });
-                    console.log(selected_teams)
-                    document.getElementById("alertSubmit").disabled=true;
+            $("#draft-mail,#email-copy").click(function(){
+                selected_teams=[];
+                var rows_selected = table.rows('.selected').data();
+                $.each(rows_selected,function(i,v){
+                    selected_teams.push([v[1], v[4]]);
                 });
+                console.log(selected_teams)
+                document.getElementById("alertSubmit").disabled=true;
+            });
 
-                // $('#table3-btn').on('click', function() {
-                //     console.log("Exit AJAX!!");
-                //     return false
-                // });
-            }
+            table.on( 'draw', function () {
+                console.log( 'Redraw occurred at: '+new Date().getTime() );
+                document.getElementById("informed_teams_loader").style.display="none";
+                document.getElementById("informed_teams").style.display="block";
+            } );
+
             var buttons = document.getElementsByClassName("dt-button")
-            // setTimeout(() => {
+            setTimeout(() => {
                 style_buttons(buttons);
                 style_table();
-                // set_in_line()
-            // }, 2000);
+            }, 2000);
             table.draw();
         }
     })
-    document.getElementById("informed_teams").style.display="block"
-    console.log(document.getElementById("informed_teams"))
 }
+
 
 function ValidateEmail(input) {
     var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     console.log("Validate Email: ", input);
     if (input.match(validRegex)) {
         // alert("Valid email address!");
-        // document.form1.text1.focus();
         return true;
     } else {
         // alert("Invalid email address!");
-        // document.form1.text1.focus();
         return false;
     }
 }
+
+$("#email-copy").click(function(){
+    var copy_email=[];
+    var rows_selected = table.rows('.selected').data();
+    $.each(rows_selected,function(i,v){
+        if(ValidateEmail(v[4])) {
+            copy_email.push(v[4]);
+        } 
+    });
+    navigator.clipboard.writeText(copy_email);
+    // console.log(copy_email);
+
+    /* Alert the copied text */
+    alert("Emails copied successfully!!");
+    console.log("Copied Emails: ", copy_email)
+});
 
 // ########################################   Alert To confirm the "Team IDs"   #########################################
 $('#alertEmail').on('show.bs.modal', function (event) {
@@ -463,48 +435,31 @@ $('#alertEmail').on('show.bs.modal', function (event) {
     document.getElementById("alertTitle").innerHTML = `Total of ${selected_teams.length} team(s) selected`;
     console.log("Selected teams length: ", selected_teams.length);
     var rejected_email = '';
-    // var num_rejected_email = 0;
-    var accepted_email_list = []
-    var accepted_email = '';
-    // for (var i = 0; i < (selected_teams_len-num_rejected_email); i++) { 
-    //     console.log("Looping on: ", selected_teams[i]);
-    //     if(ValidateEmail(selected_teams[i][1])) {
-    //         console.log("Accepted Email", selected_teams[i]);
-    //         accepted_email += '<li class="list-group-item">'+ selected_teams[i][0] +'</li>';
-    //     }
-    //     else {
-    //         rejected_email += '<li class="list-group-item">'+ selected_teams[i][0] +'</li>';
-    //         console.log("Rejected Email", selected_teams.splice(i, 1));
-    //         // console.log(selected_teams);
-    //         num_rejected_email += 1
-    //     }
-    // }
+    var num_rejected_email = 0;
+    accepted_email_list = []
+    // var accepted_email = '';
+    
     Object.keys(selected_teams).forEach((val,index)=>{
-        // tpHTML += '<li class="list-group-item">'+ selected_teams[index][0] +'</li>';
         // Filtering faulty emails
-        console.log("Looping on: ", selected_teams[index]);
+        console.log("Looping on: ", selected_teams[index], val, typeof(index));
         if(ValidateEmail(selected_teams[index][1])) {
             accepted_email_list.push(selected_teams[index])
             console.log("Accepted Email", selected_teams[index]);
-            // accepted_email += '<li class="list-group-item">'+ selected_teams[index][0] +'</li>';
         }
         else {
-            rejected_email += '<li class="list-group-item">'+ selected_teams[index][0] +'</li>';
+            num_rejected_email += 1;
+            rejected_email += '<tr><th scope="row">'+ num_rejected_email + '</th>'+
+                                '<td>'+ selected_teams[index][0] +'</td>'+
+                                '<td>'+ selected_teams[index][1] +'</td></tr>';
             console.log("Rejected Email", selected_teams[index]);
-            // console.log(selected_teams);
-            // num_rejected_email += 1
         }
     })
     document.getElementById("rejectedEmailBtn").innerHTML=`Number of emails rejected: ${ (selected_teams.length)-(accepted_email_list.length) }`;
     // document.getElementById("acceptedEmailBtn").innerHTML=`Number of emails accepted: ${ (accepted_email_list.length) }`;
-    // document.getElementById("alertBody").innerHTML=tpHTML;
-    // document.getElementById("acceptedEmailList").innerHTML=accepted_email;
     document.getElementById("rejectedEmailList").innerHTML=rejected_email;
     console.log(accepted_email_list);
     if (accepted_email_list.length > 0) {
         document.getElementById("alertSubmit").disabled=false;
-        // document.getElementById("draftEmail-cc").multiple = true;
-        // document.getElementById("draftEmail-bcc").multiple = true;
     }
 });
 
@@ -539,14 +494,12 @@ $('#draftEmailSubmit').on('click', function() {
     $.ajax({
         type: 'POST',
         url: '/email/',
-        // data: {csrfmiddlewaretoken: window.CSRF_TOKEN},
         data: {
             'emails': JSON.stringify(accepted_email_list),
             'cc': cc,
             'bcc': bcc,
             'sub': sub,
             'msg': msg,
-            // '{{ csrf_token }}':csrfmiddlewaretoken,
         },
     }).done(function(data) {
         console.log(data);
@@ -1096,7 +1049,9 @@ const style_table = () => {
         w_tag.style.cssText += 'max-height:300px;'
                                 + 'display:block;'
                                 + 'overflow:auto;'
-                                + 'margin-top:10px;';
+                                + 'margin-top:10px;'
+                                + 'border: 1px solid #9d9d9da6;'
+                                + 'box-shadow: 0px 0px 2px #9d9d9d;';
     
 
 }

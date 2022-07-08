@@ -15,7 +15,7 @@
   <link rel="stylesheet" type="text/css" href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css">
   <link rel="stylesheet" href="/media/css/style.css">
   <link rel="stylesheet" type="text/css" href="/media/js/styles.css">
-
+  <link rel="stylesheet" type="text/css" href="/media/css/spinner.css">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
@@ -250,7 +250,7 @@
           <!-- another chart space for future -->
           <div class="row">
             <div class="col-md-12 grid-margin stretch-card">
-              <div class="card">
+              <div class="card" style="min-height: 40vw;">
                 <div class="card-body">
                   <div class="d-flex justify-content-between">
                     <p class="card-title">Informed Teams Counter</p>
@@ -263,11 +263,6 @@
                       <label class="ml-1" style="margin-top: 8px;">Select Category:</label>
                       <select id="category_select" class="form-select" onchange="updateOnChange_category()" style="min-width: 176px; width: 17vw; display: inline; margin-left: 5px;">
                         <option value="-5">Select Category</option>
-                        <!-- <option value="BM">BM</option>
-                        <option value="DB">DB</option>
-                        <option value="FW">FW</option>
-                        <option value="SM">SM</option>
-                        <option value="SS">SS</option> -->
                       </select>
                     </div>
                     <div class="col-12 col-sm-6" style="padding: 3px;">
@@ -275,18 +270,17 @@
                       <label class="ml-1" style="margin-top: 8px;">Select Topic:</label>
                       <select id="topic_select" class="form-select"  style="min-width: 176px; width: 17vw; display: inline; margin-left: 5px;">
                         <option value="-5">Select Topic</option>
-                        <!-- <option value="1">Task 1</option>
-                        <option value="2">Task 2</option>
-                        <option value="6">Stage 1</option>
-                        <option value="3">Task 3</option>
-                        <option value="4">Task 4</option>
-                        <option value="5">Task 5</option> -->
                       </select>
                     </div>
                   </div>
-                  <div class="row justify-content-sm-center ml-2 mr-sm-l my-2"> 
+                  <div class="row justify-content-sm-center my-2 mx-sm-0 ml-1"> 
                     <button id="table3-btn" class="btn btn-success" onclick="updateOnChange_topic()" style="max-width: 130px; ">Search Data</button>
                   </div>
+                </div>
+                <div id="informed_teams_loader" class="hollow-dots-spinner" :style="spinnerStyle">
+                  <div class="dot"></div>
+                  <div class="dot"></div>
+                  <div class="dot"></div>
                 </div>
                 <div id="informed_teams" style="display:none;">
                   <div class="row">
@@ -295,19 +289,17 @@
                     </div>
                   </div>
                   <div class="row p-3">
-                    <div class="col-12" style="max-height: 550px; overflow: scroll">
+                    <div class="col-12">
                       <table id="table3" class="table table-hover table-bordered table-striped" style="width: 100%; cursor: pointer; text-align: center;border:none; top:0%;">
                         <!-- table head and table columns -->
                         <thead>
                           <tr style="top:0; position:sticky; background-color: #030835; color: white; z-index:1;"> 
                             <th>
                               <button style="border: none; background: transparent; font-size: 14px;" id="MyTableCheckAllButton"/>
-                              {% comment %} <i class="far fa-square"></i> {% endcomment %}
                               <svg style="width:16px;height:16px" viewBox="0 0 24 24">
-                                <path fill="white" d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z" />
+                                <path id="table-checkbox" fill="white" d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z" />
                               </svg>
                             </th>
-                            {% comment %} <th></th> {% endcomment %}
                             <th>Team_id</th>
                             <th>Status</th>
                             <th>Captain's Name</th>
@@ -318,16 +310,6 @@
                         <!-- table body for populating data -->
                         <tbody id="table3Content">
                         </tbody>
-                        <!-- table footer and table columns -->
-                        {% comment %} <tfoot>
-                          <tr style="bottom:0; position:sticky; background-color: #030835; color: white;">
-                            <td>Team_id</td>
-                            <td>Status</td>
-                            <td>Captain's Name</td>
-                            <td>Captain's Email</td>
-                            <td>Captain's Contact No</td>
-                          </tr>
-                        </tfoot> {% endcomment %}
                       </table>
                       <!-- #### Checkboxes to select seen/unseen teams #### -->
                       <div class="d-flex" style="margin-top: 15px;">
@@ -341,6 +323,16 @@
                           <label class="ml-0 form-check-label" for="unseen-teams">Unseen Teams</label>
                         </div>
                         <button type="button" id="draft-mail" class="btn btn-outline-success" data-toggle="modal" data-target="#alertEmail" style="padding: 5px 9px;">Draft Mail</button>
+                        {% comment %} <div class="form-check form-check-inline"> {% endcomment %}
+                        {% comment %} <label class="ml-0 form-check-label" for="seen-teams"> or copy emails</label> {% endcomment %}
+                        {% comment %} <label class="form-check mr-3 ml-0" style="margin-top: 6px;">or Copy email </label> {% endcomment %}
+                          {% comment %} <a href""><i class="bi bi-clipboard"></i></a> {% endcomment %}
+                        <button id="email-copy" class="ml-1" style="border:none;background:transparent;margin:auto;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="25" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+                            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                          </svg>
+                        </button>
                       </div>
 
                       <!-- #### Alert to confirm the "Team IDs" #### -->
@@ -356,25 +348,24 @@
                             <div class="modal-body" style="padding:10px 30px; overflow:auto;">
                               <div class="accordion" id="accordionExample">
                                 <div class="card">
-                                  {% comment %} <div class="card-header">
-                                    <h2 class="mb-0">
-                                      <button id="acceptedEmailBtn" class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" style="color:#760057;"></button>
-                                    </h2>
-                                  </div>
-                                  <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
-                                    <div class="card-body">
-                                      <ol class="list-group list-group-numbered" id="acceptedEmailList"></ol>
-                                    </div>
-                                  </div> {% endcomment %}
-                                  {% comment %} <hr> {% endcomment %}
                                   <div class="card-header">
                                     <h2 class="mb-0">
-                                      <button id="rejectedEmailBtn" class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseOne" style="color:#760057;"></button>
+                                      <button id="rejectedEmailBtn" class="btn btn-outline-danger" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseOne"></button>
                                     </h2>
                                   </div>
                                   <div id="collapseTwo" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
                                     <div class="card-body">
-                                      <ol class="list-group list-group-numbered" id="rejectedEmailList"></ol>
+                                      <table class="table">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Team ID</th>
+                                            <th scope="col">Email ID</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="rejectedEmailList">
+                                        </tbody>
+                                      </table>
                                     </div>
                                   </div>
                                 </div>
@@ -398,9 +389,8 @@
                                 <span aria-hidden="true">&times;</span>
                               </button>
                             </div>
-                            <div class="modal-body" style="padding:10px 30px;">
+                            <div class="modal-body" style="padding:10px 20px 30px 20px;">
                               <form class="needs-validation" method="POST" novalidate>
-                                {% comment %} {% csrf_token %} {% endcomment %}
                                 <div class="form-group mb-3">
                                   <label for="recipient-name" class="col-form-label" style="margin-bottom:0px; padding-bottom:5px;">To</label>
                                   <input name="cc" type="email" class="form-control no-validate mb-2" id="draftEmail-cc" placeholder="cc" aria-describedby="CC" style="padding:5px 10px; height:35px;" multiple="true">
@@ -416,11 +406,10 @@
                                   <textarea name="msg" class="form-control" placeholder="Message" id="draftEmail-msg" style="min-height:145px;" required></textarea>
                                   <div class="invalid-feedback"> Required !! </div>
                                 </div>
-                                <button type="button" id="draftEmailSubmit" class="btn btn-primary" data-dismiss="modal">Send</button>
+                                <div class="text-right">
+                                  <button type="button" id="draftEmailSubmit" class="btn btn-primary" data-dismiss="modal" style="">Send</button>
+                                </div>
                               </form>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             </div>
                           </div>
                         </div>
