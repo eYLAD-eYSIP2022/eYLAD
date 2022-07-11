@@ -321,8 +321,8 @@ def models_stats(request, id=None):
     #                     AND td.theme IS NOT NULL
     #                     GROUP BY DATE(u.created_at),td.theme 
     #                     ORDER by DATE(u.created_at) DESC LIMIT 60;"""
-    sql_task_list = """SELECT team_id,theme,CONVERT(MAX(task{0}_date), CHAR) AS date_of_submit FROM task{0}_status GROUP BY team_id;""".format(
-        id
+    sql_task_list = """SELECT team_id,theme,CONVERT(MAX(task{}_date), CHAR) AS date_of_submit FROM task{}_status GROUP BY team_id;""".format(
+        id, id
     )
     sql_total = """SELECT theme,COUNT(id) AS submitted FROM (SELECT * FROM team_details WHERE eyrc=1  GROUP BY id) v GROUP by theme;"""
     sql_sub_thistask = """SELECT theme,COUNT(team_id) AS submitted FROM (SELECT * FROM task{}_status GROUP BY team_id) v GROUP by theme;""".format(
@@ -1755,6 +1755,27 @@ def get_teams_seen(request, topic_id):
     ust = unseen_teams.to_json()
 
     return JsonResponse({"seen_teams": st, "unseen_teams": ust})
+
+
+def get_comments(request, task_id):
+    if(task_id==6 or task_id==7):
+        query3 = """select tf.team_id, 
+            tf.team_member_id, tf.theme, tmd.name, tf.comment 
+            from 
+            stage{}_feedback as tf, team_member_detail as tmd 
+            WHERE tf.team_member_id=tmd.id and 
+            lower(tf.comment) not regexp "^[[:punct:]]*[[:blank:]]*(good|na|nan|n/a|n.a|nil|nill|nice|no|noo|no comment|no comments|no feedback|no other feedback|none|nope|nothing|nah|no suggestions|good task|great task|great work|all good|good experience|amazing experience|all clear|no queries|no question|not any|nothing much|nothing else|null|ok|thanks|thank you|no further comments|.|..|...)[[:blank:]]*[[:punct:]]*$";""".format(task_id-5)
+    else:
+        query3 = """select tf.team_id, 
+                    tf.team_member_id, tf.theme, tmd.name, tf.comment 
+                    from 
+                    task{}_feedback as tf, team_member_detail as tmd 
+                    WHERE tf.team_member_id=tmd.id and 
+                    lower(tf.comment) not regexp "^[[:punct:]]*[[:blank:]]*[[:punct:]]*$";""".format(task_id)
+    data3 = pd.read_sql(query3, con=connection)
+    tc = data3.to_json()
+    return JsonResponse({"task_comments": tc})
+
 
 @csrf_exempt
 def email(request):

@@ -6,6 +6,8 @@ dev.sh
 *.pyc
 __pycache__
 db.sqlite3
+code-test.ipynb
+pred_csv_files
 
 # Backup files # 
 *.bak 

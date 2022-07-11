@@ -36,14 +36,17 @@ var selected_teams=[];
 var accepted_email_list=[];
 
 let nav_theme = document.getElementById("main_theme").value;
+document.getElementById(`comment_title`).innerText = `${nav_theme} Feedback Comments`;
 // doughnutChart();
 const theme_change = () => {
     nav_theme = document.getElementById("main_theme").value;
+    document.getElementById(`comment_title`).innerText = `${nav_theme} Feedback Comments`;
     // nav_theme = "BM";
     updateDoughnutChart();
     // console.log(total_submissions, result.length, expnotsub)
     updateOnChange();
     updateOnChange_topic();
+    updateOnChange_comment();
 }
 
 console.log(nav_theme)
@@ -389,10 +392,10 @@ const updateOnChange_topic = () =>{
                 document.getElementById("informed_teams").style.display="block";
             } );
 
-            var buttons = document.getElementsByClassName("dt-button")
+            var mybuttons = $("#informed_teams").find(".dt-button")
             setTimeout(() => {
-                style_buttons(buttons);
-                style_table();
+                style_buttons(mybuttons);
+                style_table("table3");
             }, 2000);
             table.draw();
         }
@@ -515,6 +518,11 @@ let BarchartData = [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
 
 const getPredText = () => { 
     return `${topic_selector.options[topic_selector.selectedIndex].innerText}_${nav_theme}_Seen_unseen`;
+}
+
+// #### for dynamic naming of comment table download
+const getComText = (theme, task) => {
+    return `${theme}_Comments_${task}`;
 }
 
 const setBarData=(data,y,threshold)=>{
@@ -928,6 +936,139 @@ const updateOnChange = () =>{
     }
 }
 
+const updateOnChange_comment = () =>{
+    $("#comment").css("display", "none");
+    $("#toggle_switch").css("display", "none");
+    var table=$('#commentsTable').DataTable()
+    table.destroy();
+    var new_task = parseInt(document.getElementById(`comment_task_select`).value);
+    if(new_task === -5){
+        $("#comment").css("display", "none");
+        document.getElementById(`comment_title`).innerText = `${nav_theme} Feedback Comments`;
+        document.getElementById("comments_loader").style.display="none";
+    }
+    else {
+        document.getElementById("comments_loader").style.display="block";
+        curr_task=new_task
+        if (new_task==6 || new_task==7) {
+            document.getElementById(`comment_title`).innerText = `${nav_theme} Stage ${new_task-5} Feedback Comments`;
+        } else {
+            document.getElementById(`comment_title`).innerText = `${nav_theme} Task ${new_task} Feedback Comments`;
+        }
+        // $('#commentsTable').DataTable().clear();
+        var trHTML = '';
+        $.ajax({
+            // #### URL and datatype for ajax call
+            url: `/get-comments/${new_task}/`,
+            dataType: 'json',
+            // #### Success function
+            success: function (suc_data) {
+                // #### Converting data in json format
+                let taskComments = JSON.parse(suc_data.task_comments)
+                //console.log(taskComments)
+
+                Object.keys(taskComments.team_member_id).forEach((val,index)=>{
+                    if (taskComments.theme[val]==nav_theme) {
+                        trHTML += "<tr class='table-success seen'>"+
+                    '<td>' + taskComments.team_member_id[val]+
+                    '</td><td>' + taskComments.team_id[val] +
+                    '</td><td>' + taskComments.theme[val] +
+                    '</td><td>' + taskComments.name[val] +
+                    `</td><td id="comm_col" style="text-align: left; white-space: break-spaces;">` + taskComments.comment[val] +
+                    '</td></tr>';
+                    } 
+                })
+                $("#commentTableContent").html(trHTML)
+                $(document).ready(function () {
+                    var table=$('#commentsTable').DataTable({
+                        dom: 'Blfrtip',
+                        destroy: true,
+                        // #### buttons on tables download option
+                        buttons: [
+                            'copyHtml5',
+                            {
+                                extend: 'pdfHtml5',
+                                title: function () { return getComText(nav_theme, new_task); }
+                            },
+                            {
+                                extend: 'excelHtml5',
+                                title: function () { return getComText(nav_theme, new_task); }
+                            },
+                            {
+                                extend: 'csvHtml5',
+                                title: function () { return getComText(nav_theme, new_task); }
+                            }
+            
+                        ],
+                        // #### function for search on footer
+                        initComplete: function () {
+                            // #### Apply the search
+                            this.api().columns().every( function () {
+                                var that = this;
+                
+                                $('#commentsTable', this.footer() ).on( 'keyup change clear', function () {
+                                    if ( that.search() !== this.value ) {
+                                        that
+                                            .search( this.value )
+                                            .draw();
+                                    }
+                                } );
+                            } );
+                        },
+                        "paging": true,
+                        "lengthChange": true,
+                        // #### options for pagelength i.e. first is value list and second is name list
+                        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "pageLength": 10,
+                        "pagingType": "full_numbers",
+                        "language": {
+                            oPaginate: {
+                            //    sNext: '<i class="fa fa-forward"></i>',
+                            //    sPrevious: '<i class="fa fa-backward"></i>',
+                            sFirst: '<<',
+                            sLast: '>>'
+                            }
+                        }   
+                    });
+                    var mybuttons = $("#comment").find(".dt-button");
+                    table.columns([0,1,2,3]).visible(false);
+                    setTimeout(() => {
+                        style_buttons(mybuttons);
+                        style_table("commentsTable");
+                        document.getElementById("comments_loader").style.display="none";
+                        $("#comment").css("display", "block");
+                        table.columns([0,1,2,3]).visible(false);
+                        $("#toggle_button_holder").html('<button type="button" id="toggle_switch" class="btn btn-outline-success" onclick="toggleColumns()" style="display: inline-block;">Show Details</button>');
+                        $("#toggle_switch").css("display", "block");
+                    }, 2000);
+                })
+            }
+        })
+    }
+}
+
+const toggleColumns = () =>{
+    var table = $(`#commentsTable`).DataTable();
+    var toggle_switch = document.getElementById("toggle_switch");
+    // console.log(toggle_switch)
+    
+    // #### text is to show then make columns visible and change text to hide
+    if(toggle_switch.innerText==="Show Details"){
+        toggle_switch.innerText="Hide Details";
+        table.columns([0,1,2,3]).visible(true);
+    }
+    else{
+        // #### text is hide then hide columns and change text to show
+        toggle_switch.innerText="Show Details";
+        table.columns([0,1,2,3]).visible(false);
+    }
+
+    // #### make css changes
+    toggle_switch.classList.toggle("btn-outline-info");
+    toggle_switch.classList.toggle("btn-outline-success");
+    // table.draw()
+}
+
 // #### function for getting quotes on dashboard
 $.getJSON('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.quotable.io/random?tags=technology,famous-quotes'), function (data) {
     // alert(data.contents);
@@ -972,12 +1113,12 @@ const style_buttons = (buttons) => {
     }
 }
 
-const style_table = () => {
+const style_table = (table_id) => {
 
         // #### get the table length filter
-        var table_len = document.getElementById("table3_length");
+        var table_len = document.getElementById(`${table_id}_length`);
         // #### get the table search
-        var table_filter = document.getElementById("table3_filter");
+        var table_filter = document.getElementById(`${table_id}_filter`);
         
         table_len.style.marginLeft = "1px";
         table_filter.style.marginRight = "15px";
@@ -1034,7 +1175,7 @@ const style_table = () => {
         table_filter.firstChild.firstChild.style.maxWidth="30vw"
 
         // #### wrapper for table
-        tb2 = document.getElementById("table3");
+        tb2 = document.getElementById(`${table_id}`);
         var p_tag = tb2.parentNode;
         console.log(p_tag);
         var w_tag = document.createElement('div');

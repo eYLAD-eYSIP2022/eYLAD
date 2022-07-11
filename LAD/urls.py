@@ -17,5 +17,6 @@ urlpatterns = [
     # url(r'^allowances_mas/(?P<pk>\d+)/$', AllowanceAPIView.as_view()),
     path('dashboard/',views.dashboard, name="dashboard"), ############# DASHBOARD PAGE ##############
     path('email/', views.email, name="email"),
+    path('get-comments/<int:task_id>/', views.get_comments, name="get_comments"),########### URL FOR AJAX  ##########
     # path('temp/',views.temp, name="temp"),
 ]
