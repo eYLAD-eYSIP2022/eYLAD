@@ -13,6 +13,7 @@ urlpatterns = [
     path('taskdata/<int:id>/', views.taskData, name="taskData"),########### URL FOR AJAX  ##########
     path('get-seen-teams/<int:topic_id>/', views.get_teams_seen, name="get_teams_seen"),########### URL FOR AJAX  ##########
     path('feedbackdata/<int:id>/', views.feedbackData, name="feedbackData"),########### URL FOR AJAX  ##########
+    path('feedbackSelect/<int:task>/', views.feedbackSelect, name="feedbackData"),########### URL FOR AJAX  ##########
     path('feedbacktrack/<int:id>/', views.feedbackTrack, name="feedbackTrack"),########### URL FOR AJAX  ##########
     # url(r'^allowances_mas/(?P<pk>\d+)/$', AllowanceAPIView.as_view()),
     path('dashboard/',views.dashboard, name="dashboard"), ############# DASHBOARD PAGE ##############
