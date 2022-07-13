@@ -26,7 +26,12 @@
   {% comment %} <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/fontawesome.min.css" integrity="sha384-zIaWifL2YFF1qaDiAo0JFgsmasocJ/rqu7LKYH8CoBEXqGbb9eO+Xi3s6fQhgFWM" crossorigin="anonymous"> {% endcomment %}
 
   {% comment %} <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script> {% endcomment %}
-  <script src="https://cdn.anychart.com/releases/8.8.0/js/anychart-base.min.js"></script>
+  <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+  {% comment %} <script src="https://cdn.anychart.com/releases/v8/js/anychart-exports.min.js"></script> {% endcomment %}
+  <script src="https://cdn.anychart.com/releases/v8/js/anychart-ui.min.js"></script>
+  <script src="https://cdn.anychart.com/releases/v8/js/anychart-polar.min.js"></script>
+  <link href="https://cdn.anychart.com/releases/v8/css/anychart-ui.min.css" type="text/css" rel="stylesheet">
+  {% comment %} <link href="https://cdn.anychart.com/releases/v8/fonts/css/anychart-font.min.css" type="text/css" rel="stylesheet"> {% endcomment %}
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
@@ -247,6 +252,95 @@
             </div>
           </div>
 
+          <!--  Feedback Plot Question-wise  -->
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div style="width:100%">
+                <div class="card">
+                  <div class="card-body" id="headingOne">
+                    <h4 id="feedback-questions">Feedback Question</h4>
+                    <div class="d-sm-flex my-4 justify-content-around">
+                      <select id="feedback-task" 
+                        style="border-radius: 0.25rem;
+                                color: #000;
+                                background-color: transparent;
+                                border-color: #ced4da;
+                                min-width: 176px;
+                                width: 17vw;
+                                margin-top:8px;
+                                font-size: medium;
+                                padding: 6px;">
+                        <option class="dropdown-item" selected value="-1">Select Task</option>
+                        <option class="dropdown-item" value="0">Task 0</option>
+                        <option class="dropdown-item" value="1">Task 1</option>
+                        <option class="dropdown-item" value="2">Task 2</option>
+                        <option class="dropdown-item" value="3">Stage 1 Part 1</option>
+                        <option class="dropdown-item" value="4">Stage 1 Part 2</option>
+                        <option class="dropdown-item" value="5">Stage 1 Part 3</option>
+                        <option class="dropdown-item" value="6">Stage 1 Part 4</option>
+                        <option class="dropdown-item" value="7">Task 3</option>
+                        <option class="dropdown-item" value="8">Task 4</option>
+                        <option class="dropdown-item" value="9">Task 5</option>
+                        <option class="dropdown-item" value="10">Stage 2 Part 1</option>
+                        <option class="dropdown-item" value="11">Stage 2 Part 2</option>
+                        <option class="dropdown-item" value="12">Stage 2 Part 3</option>
+                        <option class="dropdown-item" value="13">Stage 2 Part 4</option>
+                      </select>
+                      <select id="feedback-ques"
+                        style="border-radius: 0.25rem;
+                                color: #000;
+                                background-color: transparent;
+                                border-color: #ced4da;
+                                min-width: 176px;
+                                width: 17vw;
+                                margin-top:8px;
+                                font-size: medium;
+                                padding: 6px;">
+                        <option class="dropdown-item" selected value="-1">Select Question</option>
+                      </select>
+                      <select id="graph-type"
+                          style="border-radius: 0.25rem;
+                                color: #000;
+                                background-color: transparent;
+                                border-color: #ced4da;
+                                min-width: 176px;
+                                width: 17vw;
+                                margin-top:8px;
+                                font-size: medium;
+                                padding: 6px;">
+                        <option class="dropdown-item" value="-1">Select Graph</option>
+                        <option value="0">Doughnut Chart</option>
+                        <option value="1">Bar Chart</option>
+                        <option value="2">Column-spline Graph</option>
+                        <option selected value="3">Polar Graph</option>
+                        {% comment %} <option value="2">Histogram</option> {% endcomment %}
+                      </select>
+                    </div> 
+
+                    {% comment %} <div class="row"> {% endcomment %}
+                    <div class="row justify-content-sm-center my-2 mx-sm-0 ml-1"> 
+                      <button id="graph-selection-btn" class="btn btn-success" style="max-width: 130px; ">Plot</button>
+                    </div>
+                      {% comment %} <h6 style="display:inline-block; font-weight: 400; margin: 10px 10px;">
+                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                          Collapsible Group Item #1
+                        </button>
+                      </h6> {% endcomment %}
+                    {% comment %} </div> {% endcomment %}
+
+                    <div class="row">
+                      <div id="feedbackSelectContainer" style="display:none; min-height:450px;">
+                        {% comment %} <canvas id="feedbackSelectionGraph" width="400" height="400" style="max-height:500px;"> {% endcomment %}
+                          {% comment %} <p>Hello Fallback World</p> {% endcomment %}
+                        {% comment %} </canvas> {% endcomment %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>  
+            </div>
+          </div>
+          
           <!-- feedback comments table -->
           <div class="row">
             <div class="col-md-12 grid-margin stretch-card">
@@ -307,7 +401,7 @@
           <!-- another chart space for future -->
           <div class="row">
             <div class="col-md-12 grid-margin stretch-card">
-              <div class="card" style="min-height: 40vw;">
+              <div class="card">
                 <div class="card-body">
                   <div class="d-flex justify-content-between">
                     <p class="card-title">Informed Teams Counter</p>
@@ -334,6 +428,7 @@
                     <button id="table3-btn" class="btn btn-success" onclick="updateOnChange_topic()" style="max-width: 130px; ">Search Data</button>
                   </div>
                 </div>
+                <!--  Spinner till the table loads  -->
                 <div id="informed_teams_loader" class="hollow-dots-spinner" :style="spinnerStyle">
                   <div class="dot"></div>
                   <div class="dot"></div>
@@ -492,6 +587,8 @@
   <script src="/media/js/template.js"></script>
   <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
   <script src="/media/js/dashboard.js"></script>
+  <script src="/media/js/feedbackSelect.js"></script>
+  {% comment %} <script src="/media/js/graph.js"></script> {% endcomment %}
 
   <script>
     localStorage.setItem("thresh","{{thresh|escapejs}}")

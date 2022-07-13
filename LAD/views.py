@@ -58,7 +58,36 @@ from LAD.feedback_queries import (
     stage1_feed_box_3_legend,
     stage1_feed_box_4_legend
 )
-
+from LAD.feedbackSelect_queries import (
+    task0_feedbackSelect,
+    task1_feedbackSelect,
+    task2_feedbackSelect,
+    task3_feedbackSelect,
+    task4_feedbackSelect,
+    task5_feedbackSelect,
+    stage1_feedbackSelect_1,
+    stage1_feedbackSelect_2,
+    stage1_feedbackSelect_3,
+    stage1_feedbackSelect_4,
+    stage2_feedbackSelect_1,
+    stage2_feedbackSelect_2,
+    stage2_feedbackSelect_3,
+    stage2_feedbackSelect_4,
+    task0_feedbackSelect_legend,
+    task1_feedbackSelect_legend,
+    task2_feedbackSelect_legend,
+    task3_feedbackSelect_legend,
+    task4_feedbackSelect_legend,
+    task5_feedbackSelect_legend,
+    stage1_feedbackSelect_1_legend,
+    stage1_feedbackSelect_2_legend,
+    stage1_feedbackSelect_3_legend,
+    stage1_feedbackSelect_4_legend,
+    stage2_feedbackSelect_1_legend,
+    stage2_feedbackSelect_2_legend,
+    stage2_feedbackSelect_3_legend,
+    stage2_feedbackSelect_4_legend
+)
 ############################# NEW IMPORTS ################################
 # from piazza_api.rpc import PiazzaRPC
 # from piazza_api import Piazza
@@ -1664,6 +1693,78 @@ def feedbackData(request, id):
     # return JsonResponse({"chart_data": js,"quest_list":quest_list,"box_chart_data":x2})
 
 
+def feedbackSelect(request, task):
+    #### choose query based on task
+    # print("\n\n####$$$$$$$\n", task)
+    id = int(task)
+    if id == 0:
+        data_g_box = task0_feedbackSelect
+        legend = task0_feedbackSelect_legend
+    elif id == 1:
+        data_g_box = task1_feedbackSelect
+        legend = task1_feedbackSelect_legend
+    elif id == 2:
+        data_g_box = task2_feedbackSelect
+        legend = task2_feedbackSelect_legend
+    elif id == 3:
+        data_g_box = stage1_feedbackSelect_1
+        legend = stage1_feedbackSelect_1_legend
+    elif id == 4:
+        data_g_box = stage1_feedbackSelect_2
+        legend = stage1_feedbackSelect_2_legend
+    elif id == 5:
+        data_g_box = stage1_feedbackSelect_3
+        legend = stage1_feedbackSelect_3_legend
+    elif id == 6:
+        data_g_box = stage1_feedbackSelect_4
+        legend = stage1_feedbackSelect_4_legend
+    elif id == 7:
+        data_g_box = task3_feedbackSelect
+        legend = task3_feedbackSelect_legend
+    elif id == 8:
+        data_g_box = task4_feedbackSelect
+        legend = task4_feedbackSelect_legend
+    elif id == 9:
+        data_g_box = task5_feedbackSelect
+        legend = task5_feedbackSelect_legend
+    elif id == 10:
+        data_g_box = stage2_feedbackSelect_1
+        legend = stage2_feedbackSelect_1_legend
+    elif id == 11:
+        data_g_box = stage2_feedbackSelect_2
+        legend = stage2_feedbackSelect_2_legend
+    elif id == 12:
+        data_g_box = stage2_feedbackSelect_3
+        legend = stage2_feedbackSelect_3_legend
+    elif id == 13:
+        data_g_box = stage2_feedbackSelect_4
+        legend = stage2_feedbackSelect_4_legend
+
+    #### get data from database
+    feedbackDF = pd.read_sql(data_g_box, con=connection)
+    k = True
+    t = pd.DataFrame()
+    for x in feedbackDF.columns:
+        if k:
+            k=False
+            continue
+        tmp = feedbackDF.groupby(["theme", x])[x].size()
+        t = pd.concat([t, tmp], axis=1)
+    t = t.reset_index()
+    t['index'] = t['index'].astype('str')
+    t['Index'] = t['index'].str.strip("()")
+    t['Index'] = t['Index'].str.replace('\'', '')
+    t['Index'] = t['Index'].str.replace(',', '')
+    t['Index'] = t['Index'].str.replace(' ', '_')
+    t['Index'] = t['Index'].astype(pd.StringDtype())
+
+    t.drop(["index"], axis=1, inplace=True)
+    t = t.set_index('Index')
+    # print(t, t.columns)
+
+    return JsonResponse({'data': t.to_json(), 'legend':legend})
+
+
 def feedbackTrack(request, id):
     #### get queries to be executed based on id
     if id == 0:
@@ -1795,8 +1896,6 @@ def email(request):
     msg = request.POST.getlist('msg')
     print("\n##################\n")
     print(emails, "\n", cc, "\n", bcc, "\n", sub, "\n", msg)
-    # message1 = ('Check', 'Check Check Check Check', settings.EMAIL_HOST_USER, ['manik.4716412819@ipu.ac.in', 'kunnaal007@gmail.com'])
-    # message2 = ('Another Subject', 'Here is another message', 'from@example.com', ['second@test.com'])
     msg = EmailMessage(sub[0], msg[0], settings.EMAIL_HOST_USER, emails, bcc=bcc, cc=cc)
     msg.send(fail_silently=False)
     return HttpResponse('Success')
