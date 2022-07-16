@@ -1,3 +1,4 @@
+from time import sleep
 from functools import lru_cache
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
@@ -186,6 +187,7 @@ def dashboard(request):
     # discourse_topics = pd.read_sql(discourse_query, con=connections["discourse"])
     seen_url = "https://discuss.e-yantra.org/admin/plugins/explorer/queries/10/run"
     resp = requests.post(seen_url, headers=headers, data=files)
+    sleep(2)
     discourse_topics = pd.DataFrame(resp.json()["rows"], columns=resp.json()["columns"])
     discourse_categories = discourse_topics[["name", "category_id"]]
     discourse_categories = (
@@ -210,6 +212,7 @@ def dashboard(request):
 
     url_student = "https://discuss.e-yantra.org/admin/plugins/explorer/queries/8/run"
     resp_student = requests.post(url_student, headers=headers, data=files)
+    # sleep()
     # print("\n\n#####################\nurl student: ", resp_student.json()["rows"][0])
     stats = {
         "posts": int(resp_general.json()["rows"][0][0])
@@ -313,14 +316,14 @@ def signup(request):
             user.refresh_from_db()
             #### load the profile instance created by the signal
             user.save()
-            raw_password = form.cleaned_data.get("password1")
+            # raw_password = form.cleaned_data.get("password1")
 
             #### login user after signing up
-            user = authenticate(username=user.username, password=raw_password)
-            auth.login(request, user)
+            # user = authenticate(username=user.username, password=raw_password)
+            # auth.login(request, user)
 
             #### redirect user to home page
-            return redirect("/task/0")
+            return redirect("/login")
     else:
         form = SignUpForm()
     return render(request, "signup.html", {"form": form})
@@ -1894,8 +1897,8 @@ def email(request):
     bcc = list(bcc[0].split(','))
     sub = request.POST.getlist('sub')
     msg = request.POST.getlist('msg')
-    print("\n##################\n")
-    print(emails, "\n", cc, "\n", bcc, "\n", sub, "\n", msg)
+    # print("\n##################\n")
+    # print(emails, "\n", cc, "\n", bcc, "\n", sub, "\n", msg)
     msg = EmailMessage(sub[0], msg[0], settings.EMAIL_HOST_USER, emails, bcc=bcc, cc=cc)
     msg.send(fail_silently=False)
     return HttpResponse('Success')

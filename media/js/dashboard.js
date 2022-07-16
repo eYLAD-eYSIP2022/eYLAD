@@ -672,9 +672,6 @@ const config = {
             'Teams Submitted', 
             'Teams expected to submit', 
             'Teams not expected to submit'
-            // 'Red',
-            // 'Blue',
-            // 'Yellow'
         ],
         datasets: [{
             label: 'Task Status',
@@ -683,9 +680,6 @@ const config = {
                 "#00AFB9", 
                 "#0081A7", 
                 "#F07167"
-                // 'rgb(255, 99, 132)',
-                // 'rgb(54, 162, 235)',
-                // 'rgb(255, 205, 86)'
             ],
             hoverOffset: 10
         }]
@@ -723,7 +717,7 @@ $.ajax({
         //  console.log(box_data)
         delete box_data.Entries;
         // #### clear the box chart element
-        document.getElementById("box_chart").innerHTML=" ";
+        document.getElementById("box_chart").innerHTML="";
 
         // #### get theme name from select
         //   var val_index = document.getElementById(`feedback_select`).value;

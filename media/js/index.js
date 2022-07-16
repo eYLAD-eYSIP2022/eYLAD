@@ -43,15 +43,26 @@ this_task.forEach((obj, index) => {
     total_submissions = total_submissions + obj[1]; 
     this_task_data[key_value[obj[0]]-1]=obj[1];
 })
-// console.log(task_name);
+// console.log(this_task_data);
+
+var prev_task_data = [0, 0, 0, 0, 0, 0];
+prev_task.forEach((obj, index) => {
+    prev_task_data[(key_value[obj[0]]-1)] += obj[1]
+})
+// console.log(prev_task_data);
 // console.log(sub_by_date)
 //console.log(total.map((obj,index)=>{return(obj[0])}))
 // console.log(result)
 
 // To update all the graphs when theme is changed
 let nav_theme = document.getElementById("main_theme").value;
+// console.log(nav_theme);
 const theme_change = () => {
     nav_theme = document.getElementById("main_theme").value;
+    console.log(nav_theme);
+    updateDoughnutChart();
+    updateLineChart();
+    updateOnChange2();
     var table=$('#table1').DataTable()
     table.destroy();
     var table2=$('#table2').DataTable()
@@ -88,20 +99,20 @@ let bargra = new Chart(mychart, {
     type: 'bar',
     data: {
         // #### Bar chart labels on X axis i.e. theme names
-        labels: total.map((obj, index) => { return (`${obj[0]} (${obj[1]})`) }),
+        labels: Object.keys(key_value).filter(i=> i !== 'ALL'),
 
         // #### Data 1 for all teams who submitted this task
         datasets: [{
-            label: 'Submitted',
+            label: 'Submitted this task',
             data: this_task_data,
             borderColor: [`rgba(97, 216, 216, 1)`, `rgba(97, 216, 216, 1)`, `rgba(97, 216, 216, 1)`, `rgba(97, 216, 216, 1)`, `rgba(97, 216, 216, 1)`,`rgba(97, 216, 216, 1)`],
             backgroundColor: [`rgba(0, 175, 185, 1)`, `rgba(0, 175, 185, 1)`, `rgba(0, 175, 185, 1)`, `rgba(0, 175, 185, 1)`, `rgba(0, 175, 185, 1)`, `rgba(0, 175, 185, 1)`],
-            stack: "Stack 0"
+            stack: "Stack 0",
         },
         // #### Data 2 for teams submitted prev task
         {
-            label: 'Teams submitted prev task',
-            data: prev_task.map((obj, index) => { return (obj[1]) }),
+            label: 'Submitted prev task',
+            data: prev_task_data,
             borderColor: [`rgba(255,0,0,1)`, `rgba(255,0,0,1)`, `rgba(255,0,0,1)`, `rgba(255,0,0,1)`, `rgba(255,0,0,1)`, `rgba(255,0,0,1)`],
             backgroundColor: [`rgba(240, 113, 103, 1)`, `rgba(240, 113, 103, 1)`, `rgba(240, 113, 103, 1)`, `rgba(240, 113, 103, 1)`, `rgba(240, 113, 103, 1)`, `rgba(240, 113, 103, 1)`],
             stack: "Stack 1"
@@ -121,12 +132,6 @@ let bargra = new Chart(mychart, {
     options: {
         // #### Show theme name on top
         legend: { display: true },
-        // #### Title of chart
-        title: {
-            display: true,
-            text: `${task_name} Submission`
-
-        },
         responsive: true,
         scales: {
             xAxes: [{
@@ -135,6 +140,15 @@ let bargra = new Chart(mychart, {
             yAxes: [{
                 stacked: false // #### this also..
             }]
+        },
+        plugins: {
+            title: {
+                display: true,
+                text: `${task_name} Submission`,
+                font: {
+                    size: 24
+                }
+            }
         }
     }
 })
@@ -145,12 +159,13 @@ let bargra = new Chart(mychart, {
 // #### Declaring necessary variables
 let lineChartDate = []
 let LinechartData = []
+// let maxLineChartData = [0,0,0,0,0,0,0]
 let currentDate = ""
 
 // ####  Function to format data in 2D list format
 // ####  [ALL,AB,BM,DB,FW,SM,SS]
-
-sub_by_date.forEach(element => {
+// console.log(sub_by_date);
+sub_by_date.slice().reverse().forEach(element => {
     var index
     var pos = 0
     if(element[2]===currentDate)
@@ -197,11 +212,80 @@ sub_by_date.forEach(element => {
     LinechartData[index][pos] = element[0]
     // ####  Add to count of that date (for total login on that day)
     LinechartData[index][0] += element[0]
+    // if (LinechartData[index][0] > maxLineChartData[0]) {
+    //     maxLineChartData[0] = LinechartData[index][0]
+    // }
+    // if (element[0] > maxLineChartData[pos]) {
+    //     maxLineChartData[pos] = element[0];
+    //     console.log(maxLineChartData, pos);
+    // }
 });
 // lineChartDate = lineChartDate.reverse()
 // console.log(lineChartDate)
 // console.log(LinechartData)
+// console.log(maxLineChartData[key_value[nav_theme]]);       
+
+// plugin function to move chart using buttons
+const buttonScrollLineChart = {
+    id: 'moveChart',
+    afterEvent(chart, args) {
+        const {ctx, canvas, chartArea: {left, right, top, bottom, width, height} } = chart;
+        canvas.addEventListener('mousemove', (event) => {
+            const x = args.event.x;
+            const y = args.event.y;
+
+            if (x >= left - 15 && x <= left + 15 && y >= height/2 + top - 15 
+                && y <= height/2 + top + 15) {
+                canvas.style.cursor = 'pointer';
+            }
+            else if (x >= right - 15 && x <= right + 15 && y >= height/2 + top - 15 
+            && y <= height/2 + top + 15) {
+                canvas.style.cursor = 'pointer';
+            }
+            else{
+                canvas.style.cursor = 'default';
+            }
+        })
+    },
+    
+    afterDraw(chart, args, pluginOptions) {
+        const {ctx, chartArea: {left, right, top, bottom, width, height} } = chart;
+
+        class CircleChevron {
+            // constructor(x1, y1) {
+
+            // }
+            draw(ctx, x1, pixel) {
+                const angle = Math.PI / 180;
+                // Circle
+                ctx.beginPath();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = 'rgba(102, 102, 102, 0.5)';
+                ctx.fillStyle = 'white';
+                ctx.arc(x1, height / 2 + top, 15, angle * 0, angle * 360, false)
+                ctx.stroke();
+                ctx.fill();
+                ctx.closePath();
+                // Arrow
+                ctx.beginPath();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#088383';
+                ctx.moveTo(x1 + pixel, height / 2 +top - 7.5);
+                ctx.lineTo(x1 - pixel, height / 2 + top);
+                ctx.lineTo(x1 + pixel, height / 2 +top + 7.5);
+                ctx.stroke();
+                ctx.closePath();
+            }
+        }
+
+        let drawCircleLeft = new CircleChevron();
+        drawCircleLeft.draw(ctx, left, 5);
         
+        let drawCircleRight = new CircleChevron();
+        drawCircleRight.draw(ctx, right, -5);
+    }
+}
+
 // #### Constructor of line chart
 let LineChart = new Chart(document.getElementById("lineChart"),{
     type:'line',
@@ -209,7 +293,7 @@ let LineChart = new Chart(document.getElementById("lineChart"),{
     // #### Dates as labels of line chart
         labels: lineChartDate,
         datasets: [{
-            label: 'Number of Login\'s for a particular days',
+            label: 'Number of Logins per day',
             // #### Show All themes by default
             data: LinechartData.map((obj)=>{return(obj[key_value[nav_theme]])}),
             fill: true,
@@ -220,22 +304,123 @@ let LineChart = new Chart(document.getElementById("lineChart"),{
     },
     options: {
         responsive: true,
-        title: {
-            display: true,
-            // #### Title for the chart
-            text: `Login Stats for past Days`
+        layout: {
+            padding: {
+                right: 18
+            }
         },
-        
-          scales: {
-            xAxes: [{
-                ticks: {
-                    fontSize: 10
+        plugins: {
+            title: {
+                display: true,
+                text: `Login Statistics`,
+                font: {
+                    size: 24
                 }
-            }],
-            
+            }
+        },
+        scales: {
+            x: {
+                min: LinechartData.length-10,
+                max: LinechartData.length-1,
+                title: {
+                    display: true,
+                    text: 'Date',
+                    font: {size:14}
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Number of teams',
+                    font: {size:14}
+                },
+                ticks: {
+                    min: 0,
+                    // max: maxLineChartData[key_value[nav_theme]],
+                    beginAtZero: true,
+                    callback: function(value, index, values) {
+                        if (Math.floor(value) === value) {
+                            return value;
+                        }
+                    }
+                },
+                // min: 0,
+                // max: maxLineChartData[key_value[nav_theme]],
+                beginAtZero: true
+            },
+        }
+    },
+    plugins: [buttonScrollLineChart]
+})
+
+// For button scroll
+function moveScroll() {
+    const { ctx, canvas, chartArea: {left, right, top, bottom, width, height} } = LineChart;
+    canvas.addEventListener('click', (event) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        // console.log(x);
+        // console.log(y);
+
+        if (x >= left - 15 && x <= left + 15 && y >= height/2 + top - 15 
+            && y <= height/2 + top + 15) {
+            // console.log("Left");
+            LineChart.options.scales.x.min = LineChart.options.scales.x.min - 2;
+            LineChart.options.scales.x.max = LineChart.options.scales.x.max - 2;
+            if (LineChart.options.scales.x.min <= 0) {
+                LineChart.options.scales.x.min = 0;
+                LineChart.options.scales.x.max = 9;
+            };
+        }
+        if (x >= right - 15 && x <= right + 15 && y >= height/2 + top - 15 
+        && y <= height/2 + top + 15) {
+            // console.log("Right");
+            LineChart.options.scales.x.min = LineChart.options.scales.x.min + 2;
+            LineChart.options.scales.x.max = LineChart.options.scales.x.max + 2;
+            if (LineChart.options.scales.x.max >= LinechartData.length) {
+                LineChart.options.scales.x.min = LinechartData.length-10;
+                LineChart.options.scales.x.max = LinechartData.length-1;
+            };
+        }
+        LineChart.update();
+    })
+}
+LineChart.ctx.onclick = moveScroll();
+
+// For mouse wheel scroll
+function scrollLineChart(scroll, chart, dataLength) {
+    console.log("Scrolling Login chart");
+    if (scroll.deltaX > 40) {
+        if(LineChart.options.scales.x.max >= dataLength-1) {
+            LineChart.options.scales.x.min = dataLength-10;
+            LineChart.options.scales.x.max = dataLength-1;
+        }
+        else {
+            LineChart.options.scales.x.min += 1;
+            LineChart.options.scales.x.max += 1;
         }
     }
-})
+    else if (scroll.deltaX < -30) {
+        if(LineChart.options.scales.x.min <= 0) {
+            LineChart.options.scales.x.min = 0;
+            LineChart.options.scales.x.max = 9;
+        }
+        else {
+            LineChart.options.scales.x.min -= 1;
+            LineChart.options.scales.x.max -= 1;
+        }
+    }
+    // console.log(LineChart.options.scales.x.min, LineChart.options.scales.x.max);
+    LineChart.update();
+}
+
+LineChart.canvas.addEventListener('wheel', (e) => {
+    let dataLength = LineChart.data.labels.length;
+    if (dataLength > 10)
+        scrollLineChart(e, LineChart, dataLength);
+});
+
 
 // #### Function to update line chart
 const updateLineChart = () =>{
@@ -302,10 +487,11 @@ const update_chart_data = () =>{
         // #### Success function
         success: function (suc_data) {
             // #### Converting data in json format
-            console.log(suc_data);
+            // console.log(suc_data);
             data = JSON.parse(suc_data.json_data)
             parameters=JSON.parse(suc_data.parameters)
             threshold = JSON.parse(suc_data.thresh)
+            // console.log(threshold);
             team_contact_details = JSON.parse(suc_data.details)
             
             // #### Threshold for this model
@@ -316,12 +502,12 @@ const update_chart_data = () =>{
             parameters = parameters.split(",")
             var InnERhtml = ""
             parameters.forEach((obj)=>[
-                InnERhtml += "<li>"+obj+"</li>"
+                InnERhtml += '<li class="list-group-item">'+obj+"</li>"
             ])
             var params = document.getElementById("threshold_val")
             params.innerHTML = threshold;
             var params = document.getElementById("modelParameters")
-            params.innerHTML = "<ul>"+InnERhtml+"</ul>"
+            params.innerHTML = '<ul class="list-group list-group-flush">'+InnERhtml+"</ul>"
             params.style.overflow = "auto";
     
             // #### Calculate data for doughnut chart
@@ -364,26 +550,29 @@ const update_chart_data = () =>{
                         {
                             label: "Task status",
                             backgroundColor: ["#00AFB9", "#0081A7", "#F07167"],
-                            data: [total_submissions, result.length, expnotsub]
+                            data: [total_submissions, result.length, expnotsub],
+                            hoverOffset: 10
                         }
                     ]
                 },
                 options: {
-                    title: {
-                        display: true,
-                        text: `${task_name} Prediction`
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Custom Chart Title'
+                        }
                     }
                 }
             });
     
         }
-    }
-    )
+    })
 }
 
 // ##########################################  AJAX ENDS #################################################
 // #### Populate rest of the themes
 const setBarData=(data,y,threshold)=>{
+    // console.log(data);
     for (var i = 0; i < y.length; ++i) {
             switch(data["theme"][i]) {
                 case "AB":{
@@ -440,7 +629,7 @@ const setBarData=(data,y,threshold)=>{
     // console.log(this_task);
     this_task.forEach((obj)=>{
         BarchartData[0][key_value[obj[0]]]=obj[1];
-        // console.log(key_value[obj[0]],obj[0])
+        // console.log(key_value[obj[0]],obj)
     })
     // console.log(BarchartData)
 
@@ -489,6 +678,7 @@ const updateDoughnutChart=()=>{
     //     }
     //   }
     // #### update doughnut chart
+    // console.log(BarchartData, nav_theme);
     doughnutChart.data.datasets[0].data[0] = BarchartData[0][key_value[nav_theme]];
     doughnutChart.data.datasets[0].data[1] = BarchartData[1][key_value[nav_theme]];
     doughnutChart.data.datasets[0].data[2] = BarchartData[2][key_value[nav_theme]];
@@ -501,12 +691,12 @@ const updateDoughnutChart=()=>{
 parameters = parameters.split(",")
 var InnERhtml = ""
 parameters.forEach((obj)=>[
-    InnERhtml += "<li>"+obj+"</li>"
+    InnERhtml += '<li class="list-group-item">'+obj+"</li>"
 ])
 var params = document.getElementById("threshold_val")
 params.innerHTML = threshold;
 var params = document.getElementById("modelParameters")
-params.innerHTML = "<ul>"+InnERhtml+"</ul>"
+params.innerHTML = '<ul class="list-group">'+InnERhtml+"</ul>"
 params.style.overflow = "auto";
 
 // #### Calculate data for doughnut chart
@@ -540,18 +730,21 @@ doughnutChart = new Chart(document.getElementById("doughnutChart"), {
     type: 'doughnut',
     data: {
         labels: ["Teams Submitted", 'Teams expected to submit', 'Teams not expected to submit'],
-        datasets: [
-            {
-                label: "Task status",
-                backgroundColor: ["#00AFB9", "#0081A7", "#F07167"],
-                data: [BarchartData[0][key_value[nav_theme]], BarchartData[1][key_value[nav_theme]], BarchartData[2][key_value[nav_theme]]]
-            }
-        ]
+        datasets: [{
+            label: "Task status",
+            backgroundColor: ["#00AFB9", "#0081A7", "#F07167"],
+            data: [BarchartData[0][key_value[nav_theme]], BarchartData[1][key_value[nav_theme]], BarchartData[2][key_value[nav_theme]]],
+        }],
     },
     options: {
-        title: {
-            display: true,
-            text: `${task_name} Prediction`
+        plugins: {
+            title: {
+                display: true,
+                text: `${task_name} Prediction`,
+                font: {
+                    size: 24
+                }
+            }
         }
     }
 });
@@ -1190,7 +1383,7 @@ const toggleColumns = () =>{
 
 
 setTimeout(function(){ 
-    console.log(data["time_stamp"][0])
+    // console.log(data["time_stamp"][0])
     var time_stamp = Date.parse(data["time_stamp"][0]);
     time_passed.innerText= parseInt((Date.now() - time_stamp)/60000-330);
     // console.log(time_stamp)

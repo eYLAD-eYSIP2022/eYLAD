@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Admin</title>
+  <title>Dashboard</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
   <!-- importing required CDN's, CSS and JS -->
@@ -35,26 +35,33 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
-<!-- CDN's for datatables -->
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.4.0/css/select.dataTables.min.css">
+  <!-- CDN's for datatables -->
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.4.0/css/select.dataTables.min.css">
 
-<script type="text/javascript" charset="utf8"
-  src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
-<script type="text/javascript" charset="utf8"
-  src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script type="text/javascript" charset="utf8"
-  src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-<script type="text/javascript" charset="utf8"
-  src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-<script type="text/javascript" charset="utf8"
-  src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
-<script type="text/javascript" charset="utf8"
-  src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script>
+  <script type="text/javascript" charset="utf8"
+    src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+  <script type="text/javascript" charset="utf8"
+    src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script type="text/javascript" charset="utf8"
+    src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script type="text/javascript" charset="utf8"
+    src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script type="text/javascript" charset="utf8"
+    src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+  <script type="text/javascript" charset="utf8"
+    src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script>
 
+  <!--  Guided Tour using https://iprogramista.pl/Bs5IntroTour  -->
+  <link href="/media/bs5-intro-tour/bs5-intro-tour.css" rel="stylesheet">
+  <script src="/media/bs5-intro-tour/bs5-intro-tour.min.js"></script>
 
   <style>
+    body {
+      height: 100vh !important;
+    }
+
     #sidebar .mdi {
       font-size: 2em;
       height: 0.5px;
@@ -106,6 +113,27 @@
       background: none !important; 
     }
 
+    .nav-select {
+      width: fit-content;
+      border-radius: 10px;
+      max-width: 19%;
+      color: #000;
+      background-color: transparent;
+      border-color: #a3a4a5;
+      font-size: medium;  
+      margin-left: 10px;
+      padding: 6px;
+    }
+
+    select:hover {
+      box-shadow: 0px 0px 10px #ada8a8;
+      cursor: pointer;
+    }
+
+    .ti-info:hover {
+      box-shadow: 0px 0px 5px #bdbdbd;
+    }
+
   </style> 
 </head>
 <body>
@@ -116,9 +144,9 @@
         <div class="content-wrapper">
           <!-- hero component of dashboard -->
           <div class="row">
-            <div class="col-md-12 grid-margin">
+            <div class="mb-1 col-md-12 grid-margin">
               <div class="row">
-                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                <div class="col-12 col-xl-8 mb-2 mb-xl-0">
                   <!-- User Name and quote of the day -->
                   <h3 class="font-weight-bold">Welcome {{ user.get_username }}</h3>
                   <h5 class="font-weight-normal mb-0" id="quotes">All systems are running smoothly! Have a great day ahead! :) Just Kidding</h5>
@@ -128,7 +156,7 @@
               </div>
             </div>
           </div>
-          <div class="row">
+          <div class="row mb-4">
             <!-- image of people and temperature -->
             <!-- <div class="col-md-6 grid-margin stretch-card">
               <div class="card">
@@ -148,8 +176,8 @@
                 </div>
               </div>
             </div> -->
-            <div class="col-12 col-lg-7 col-xs-12 mb-3">
-              <div style="margin: 5px; border-radius: 20px;background-color:white;padding: 10px;">
+            <div class="col-12 col-lg-7 col-xs-12 mb-3" id="tour-prediction">
+              <div style="margin: 5px; border-radius: 20px; background-color:white; padding: 10px; height:100%; border: 1px solid rgba(0,0,0,.125);">
                 <!-- canvas for doughnut chart -->
                 <canvas id="myChart" style="max-height:70vh;"></canvas>                
                 {% comment %} <canvas id="doughnutChart" style="min-height: 42vh; margin-bottom: 10px;"></canvas> {% endcomment %}
@@ -159,7 +187,7 @@
                 </div> 
               </div>
             </div>
-            <div class=" mt-2 col-12 col-lg-5 grid-margin transparent">
+            <div class=" mt-2 col-12 col-lg-5 grid-margin transparent" id="tour-discourse">
               <div class="row">
                 <!-- piazza data from backend -->
                 <div class="col-6 mb-4 stretch-card transparent">
@@ -215,7 +243,7 @@
           <div class="row">
             <div class="col-md-12 grid-margin stretch-card">
               <div class="card">
-                <div class="card-body">
+                <div class="card-body" id="tour-feedback-all">
                   <h4 id="feedback_title"></h4>
                   <div class="row">
                     <div class="row buttons">
@@ -256,7 +284,7 @@
           <div class="row">
             <div class="col-md-12 grid-margin stretch-card">
               <div style="width:100%">
-                <div class="card">
+                <div class="card" id="tour-feedback-ques">
                   <div class="card-body" id="headingOne">
                     <h4 id="feedback-questions">Feedback Question</h4>
                     <div class="d-sm-flex my-4 justify-content-around">
@@ -308,31 +336,21 @@
                                 margin-top:8px;
                                 font-size: medium;
                                 padding: 6px;">
-                        <option class="dropdown-item" value="-1">Select Graph</option>
+                        <option selected class="dropdown-item" value="-1">Select Graph</option>
                         <option value="0">Doughnut Chart</option>
                         <option value="1">Bar Chart</option>
                         <option value="2">Column-spline Graph</option>
-                        <option selected value="3">Polar Graph</option>
+                        <option value="3">Polar Graph</option>
                         {% comment %} <option value="2">Histogram</option> {% endcomment %}
                       </select>
                     </div> 
 
-                    {% comment %} <div class="row"> {% endcomment %}
                     <div class="row justify-content-sm-center my-2 mx-sm-0 ml-1"> 
                       <button id="graph-selection-btn" class="btn btn-success" style="max-width: 130px; ">Plot</button>
                     </div>
-                      {% comment %} <h6 style="display:inline-block; font-weight: 400; margin: 10px 10px;">
-                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                          Collapsible Group Item #1
-                        </button>
-                      </h6> {% endcomment %}
-                    {% comment %} </div> {% endcomment %}
-
+                    
                     <div class="row">
                       <div id="feedbackSelectContainer" style="display:none; min-height:450px;">
-                        {% comment %} <canvas id="feedbackSelectionGraph" width="400" height="400" style="max-height:500px;"> {% endcomment %}
-                          {% comment %} <p>Hello Fallback World</p> {% endcomment %}
-                        {% comment %} </canvas> {% endcomment %}
                       </div>
                     </div>
                   </div>
@@ -345,7 +363,7 @@
           <div class="row">
             <div class="col-md-12 grid-margin stretch-card">
               <div class="card">
-                <div class="card-body">
+                <div class="card-body" id="tour-feedback-comments">
                   <h4 id="comment_title">Feedback Comments</h4>
                   <div class="row px-2 py-2">
                     <div class="col-12 col-sm-6" style="padding: 3px;">
@@ -402,7 +420,7 @@
           <div class="row">
             <div class="col-md-12 grid-margin stretch-card">
               <div class="card">
-                <div class="card-body">
+                <div class="card-body" id="tour-informed-teams">
                   <div class="d-flex justify-content-between">
                     <p class="card-title">Informed Teams Counter</p>
                   </div>
@@ -588,6 +606,7 @@
   <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
   <script src="/media/js/dashboard.js"></script>
   <script src="/media/js/feedbackSelect.js"></script>
+  <script src="/media/js/guided-tour.js"></script>
   {% comment %} <script src="/media/js/graph.js"></script> {% endcomment %}
 
   <script>
