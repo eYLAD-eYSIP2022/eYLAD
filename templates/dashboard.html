@@ -103,7 +103,7 @@
       color: red;
     }
 
-    .btn-primary:disabled {
+    .btn-primary:disabled, .btn-outline-danger:disabled {
       text-decoration-line: line-through !important;
     }
 
@@ -246,7 +246,7 @@
                 <div class="card-body" id="tour-feedback-all">
                   <h4 id="feedback_title"></h4>
                   <div class="row">
-                    <div class="row buttons">
+                    {% comment %} <div class="row buttons"> {% endcomment %}
                       <div class="col-md-12 my-2" style="margin-top: 5px;">
                         <h6 style="display:inline-block; font-weight: 400; margin: 10px 10px;">Select task:</h6>
                         <select id="task_select" class="form-select selectpicker show-tick" onchange="updateOnChange()" value="0" style="display:inline-block; width: 155px;">  
@@ -262,7 +262,7 @@
                           <option value="5">Task 5</option>
                         </select>
                       </div>
-                    </div>
+                    {% comment %} </div> {% endcomment %}
                     <br>
                     <br>
                     <!-- container of box chart -->
@@ -411,6 +411,75 @@
                       <!-- submitted table ends -->
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Performance/Results Graph -->
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body" id="tour-feedback-all">
+                  <h4>Performance Graph</h4>
+                  <div class="row">
+                    <div class="col-md-6 my-2"  >
+                      <h6 style="display:inline-block; font-weight: 400; margin: 10px 10px;">Select task:</h6>
+                      <select id="performance_task_select" class="form-select selectpicker show-tick" onchange="updateOnChange()" value="0" style="display:inline-block; width: 155px;">  
+                        <option value="0">Task 0</option>
+                        <option value="1a">Task 1a</option>
+                        <option value="1b">Task 1b</option>
+                        <option value="1c">Task 1c</option>
+                        <option value="2a">Task 2a</option>
+                        <option value="2b">Task 2b</option>
+                        <option value="3">Task 3</option>
+                        <option value="4a">Task 4a</option>
+                        <option value="4b">Task 4b</option>
+                        <option value="4c">Task 4c</option>
+                        <option value="5">Task 5</option>
+                        <option value="4">Task 6</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6 my-2 text-end">
+                      <button class="mr-4 btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#customColumns">Customize column range</button>
+                    </div>
+                  </div>
+                  <div class="d-grid gap-2 col-3 mx-auto">
+                    <button class="btn btn-success">Plot</button>
+                  </div>
+                  <br>
+                  <br>
+                  <!-- container of box chart -->
+                  <div id="performChart"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="customColumns" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="mt-4 modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="staticBackdropLabel">Customize your Graph</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Add the lower and upper values of the classes for the graph. Click '+' to add more columns.
+                  <div id="performModalInputList" class="mt-3" style="max-height:230px; overflow:auto;">
+                    <div class="input-group" id="performModalInput">
+                      <span class="input-group-text" style="min-width: 40%;">Column</span>
+                      <input name="colRangeLower" type="number" aria-label="Lower value" placeholder="Lower value" class="form-control">
+                      <input name="colRangeUpper " type="number" aria-label="Higher value" placeholder="Higher value" class="form-control">
+                    </div>
+                  </div>
+                  <div class="text-end">
+                    <button class="mt-2 btn btn-outline-danger" disabled style="padding: 2px 8px;" id="performModalRemove">Remove</button>
+                    <button class="mt-2 ml-1 btn btn-outline-success" style="padding: 2px 8px;" id="performModalAdd">Add</button>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" id="performModalSubmit">Customize</button>
                 </div>
               </div>
             </div>

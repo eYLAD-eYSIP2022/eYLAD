@@ -1208,3 +1208,112 @@ const seen_teams = (e) => {
 //     }
 
 // })
+
+// $('')
+
+// function performanceGraph
+var performance_task=0;
+var performance_sub_task=0;
+$.ajax({
+    url: `/performance/${nav_theme}/${performance_task}/${performance_sub_task}`,
+    dataType: 'json',
+    success: function (suc_data) {
+        var performanceData = JSON.parse(suc_data.result);
+        console.log(suc_data, performanceData['marks']);
+        var marksList = Object.values(performanceData['marks']);
+        console.log(marksList);
+        
+    }
+})
+
+// Performance Graph Modal: Add more input rows 
+$("#performModalAdd").click(function () {
+    var getLastChild = $('#performModalInputList #performModalInput').last();
+    console.log(getLastChild);
+    var lastChildLowerValue = parseInt(getLastChild.find('input:first').val());
+    var lastChildUpperValue = parseInt(getLastChild.find('input:last').val());
+    console.log(lastChildUpperValue, lastChildLowerValue);
+    if ( ($.isNumeric(lastChildUpperValue)) && ($.isNumeric(lastChildLowerValue)) 
+            && (lastChildLowerValue >= 0) && (lastChildUpperValue >= 0) ) {
+        if ( lastChildUpperValue >= lastChildLowerValue ) {
+            var tmp = $('#performModalInput').clone();
+            // var vl = tmp.find('input:last').val();
+            tmp.find('input:first').val(parseInt(lastChildUpperValue)+1);
+            // $(tmp.find('input:first')).prop('readonly', true);
+            // $(tmp.find('input:last')).prop('readonly', true);
+            tmp.find('input:last').val('');
+            tmp.appendTo('#performModalInputList');
+        }
+        else {
+            alert("Upper value should be greater than the lower value !!");
+        }
+    }
+    else {
+        alert("Input only positive Integers !!")
+    }
+    if ($("#performModalInputList > #performModalInput").length > 1) {
+        document.getElementById("performModalRemove").disabled=false;
+    }
+});
+
+// Performance Graph Modal: Remove input rows
+$('#performModalRemove').click(function() {
+    if ($("#performModalInputList > #performModalInput").length > 1) {
+        var getLastChild = $('#performModalInputList #performModalInput').last();
+        $(getLastChild).remove();
+    }
+    if ($("#performModalInputList > #performModalInput").length < 2) {
+        document.getElementById("performModalRemove").disabled=true;
+    }
+    console.log("Remove not possible!");
+})
+
+
+var performRangeList;
+// Performance Graph Modal: Validate Customize Modal on Submit
+$("#performModalSubmit").click(function () {
+    performRangeList = [];
+    var validate = true;
+    $('#performModalInputList #performModalInput').each((index, row) => {
+        var tmp = [];
+        $(row).find("input").each((i, e) => {
+            var vl = $(e).val();
+            if ( !($.isNumeric(vl)) && (vl >= 0) ) {
+                alert("ERROR: \nField empty or negative number encountered !!");
+                performRangeList = [];
+                validate = false;
+                return false;
+            }
+            tmp.push(parseInt(vl));
+            console.log(performRangeList[performRangeList.length-1], i, tmp[i]);
+            if ( (i == 0) && (performRangeList.length != 0) 
+                        && (performRangeList[performRangeList.length-1][1] >= tmp[0]) ) {
+                alert("ERROR: \nLower value is greater than or equal to Upper value of previous Column Range !!");
+                performRangeList = [];
+                validate = false;
+                return false;
+            }
+            console.log(i, tmp);
+            if ( (i == 1) && (tmp[1] < tmp[0]) ) {
+                alert("ERROR: \nUpper value less than Lower value of same Column Range !!");
+                performRangeList = [];
+                validate = false;
+                return false;
+            }
+        });
+        performRangeList.push(tmp);
+    });
+    console.log(performRangeList, validate);
+})
+
+console.log("final", performRangeList);
+
+
+// each((_, row) => {
+//     var value = {};
+//     $(row).find(":input").each((__, e) =>
+//       value[e.name] = $(e).val()
+//     );
+//     values.push(value);
+//   });
+//   console.log(values)

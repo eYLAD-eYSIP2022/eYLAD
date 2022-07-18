@@ -1,3 +1,4 @@
+from operator import truediv
 from time import sleep
 from functools import lru_cache
 from django.http import JsonResponse, HttpResponse
@@ -89,6 +90,7 @@ from LAD.feedbackSelect_queries import (
     stage2_feedbackSelect_3_legend,
     stage2_feedbackSelect_4_legend
 )
+from LAD.performanceGraph_queries import performanceQueries
 ############################# NEW IMPORTS ################################
 # from piazza_api.rpc import PiazzaRPC
 # from piazza_api import Piazza
@@ -167,15 +169,6 @@ def logout(request):
 
 #### function for dashboard
 def dashboard(request):
-
-    # # Sending Emails to teams
-    # if request.method == "POST":
-    #     print("\n\n\n########################$$$$$$$$$$\n")
-    #     print(request)
-    #     print(request.POST.get("cc"))
-    #     print(request.POST.get("bcc"))
-    #     print(request.POST.get("sub"))
-    #     print(request.POST.get("msg"))
 
     # cur = connections["discourse"].cursor()
     # discourse_query = "SELECT DISTINCT topics.id,topics.title,topics.category_id,categories.name from topics,categories,users where topics.category_id=categories.id  AND topics.user_id=users.id AND users.moderator is true order by  categories.name;"
@@ -1880,6 +1873,36 @@ def get_comments(request, task_id):
     tc = data3.to_json()
     return JsonResponse({"task_comments": tc})
 
+
+def performanceGraph(request, theme, task_num, sub_task_num):
+    
+    query = {
+        0: """ SELECT theme, marks from task0_status where theme = '{}' """.format(theme),
+        1: """ SELECT theme, marks from task1_status where theme = '{}' and task1_number = '{}' """.format(theme, sub_task_num),
+        2: """ SELECT theme, marks from task2_status where theme = '{}' and task2_number = '{}' """.format(theme, sub_task_num),
+        3: """ SELECT theme, marks, penalty from task3_status where theme = '{}' and task3_number = '{}' """.format(theme, sub_task_num),
+        4: """ SELECT theme, marks, penalty from task4_status where theme = '{}' and task1_number = '{}' """.format(theme, sub_task_num),
+        5: """ SELECT theme, marks, penalty from task5_status where theme = '{}' and task1_number = '{}' """.format(theme, sub_task_num),
+        6: """ SELECT theme, marks, penalty from task6_status where theme = '{}' and task1_number = '{}' """.format(theme, sub_task_num)
+    }
+    
+    print(query[task_num])
+    res_df = pd.read_sql(query[task_num], con=connection)
+    print("\n\n$$$$$$$$\n", res_df)
+    # col = list(res_df.columns)
+    drop_ls = ['theme']
+    # for i in range(1, len(col), 2):
+        # res_df[col[i]] = res_df[col[i]]-res_df[col[i+1]]
+        # drop_ls.append(col[i+1])
+    if (task_num != 0) and (task_num != 1) and (task_num != 2):
+        res_df['marks'] = res_df['marks'] - res_df['penalty']
+        # drop_ls.append('marks')
+        drop_ls.append('penalty')
+    # print(drop_ls)
+    res_df.drop(drop_ls, axis=1, inplace=True)
+    print(res_df)
+
+    return JsonResponse({'result':res_df.to_json()})
 
 @csrf_exempt
 def email(request):
