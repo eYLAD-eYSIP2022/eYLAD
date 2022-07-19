@@ -6,7 +6,7 @@ var num = link[link.length - 2]
 num = parseInt(num)
 // setInterval(function(){ alert("Hello"); }, 3000);
 // #### Data of total teams in the event
-var total = JSON.parse(localStorage.getItem("total"));
+// var total = JSON.parse(localStorage.getItem("total"));
 
 // #### Data of teams submitted this task for bar chart
 var this_task = JSON.parse(localStorage.getItem("this_task"));

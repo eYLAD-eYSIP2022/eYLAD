@@ -3,13 +3,14 @@ from time import sleep
 from functools import lru_cache
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
-from .models import *
+# from .models import *
 from json import dumps
 from django.db.models import Count
 from django.db import connection
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import auth
-from .models import User
+from django.contrib.auth.models import User
+from .models import DiscourseAPI, LADUser, SignUpForm
 from django.contrib.auth import authenticate
 import datetime
 import requests
@@ -38,59 +39,37 @@ from LAD.queries import (
     team_ind,
 )
 from LAD.parameters import task_0, task_1, task_2, task_3, task_4, task_5, task_6
+
 from LAD.feedback_queries import (
-    task0_feed_box,
-    task1_feed_box,
-    task2_feed_box,
-    task3_feed_box,
-    task4_feed_box,
-    task5_feed_box,
-    stage1_feed_box_1,
-    stage1_feed_box_2,
-    stage1_feed_box_3,
-    stage1_feed_box_4,
-    task0_feed_box_legend,
-    task1_feed_box_legend,
-    task2_feed_box_legend,
-    task3_feed_box_legend,
-    task4_feed_box_legend,
-    task5_feed_box_legend,
-    stage1_feed_box_1_legend,
-    stage1_feed_box_2_legend,
-    stage1_feed_box_3_legend,
-    stage1_feed_box_4_legend
+    task0_feedback,
+    task1_feedback,
+    task2_feedback,
+    task3_feedback,
+    task4_feedback,
+    task5_feedback,
+    stage1_part1,
+    stage1_part2,
+    stage1_part3,
+    stage1_part4,
+    stage2_part1,
+    stage2_part2,
+    stage2_part3,
+    stage2_part4,
+    task0_feedback_legend,
+    task1_feedback_legend,
+    task2_feedback_legend,
+    task3_feedback_legend,
+    task4_feedback_legend,
+    task5_feedback_legend,
+    stage1_part1_legend,
+    stage1_part2_legend,
+    stage1_part3_legend,
+    stage1_part4_legend,
+    stage2_part1_legend,
+    stage2_part2_legend,
+    stage2_part3_legend,
+    stage2_part4_legend
 )
-from LAD.feedbackSelect_queries import (
-    task0_feedbackSelect,
-    task1_feedbackSelect,
-    task2_feedbackSelect,
-    task3_feedbackSelect,
-    task4_feedbackSelect,
-    task5_feedbackSelect,
-    stage1_feedbackSelect_1,
-    stage1_feedbackSelect_2,
-    stage1_feedbackSelect_3,
-    stage1_feedbackSelect_4,
-    stage2_feedbackSelect_1,
-    stage2_feedbackSelect_2,
-    stage2_feedbackSelect_3,
-    stage2_feedbackSelect_4,
-    task0_feedbackSelect_legend,
-    task1_feedbackSelect_legend,
-    task2_feedbackSelect_legend,
-    task3_feedbackSelect_legend,
-    task4_feedbackSelect_legend,
-    task5_feedbackSelect_legend,
-    stage1_feedbackSelect_1_legend,
-    stage1_feedbackSelect_2_legend,
-    stage1_feedbackSelect_3_legend,
-    stage1_feedbackSelect_4_legend,
-    stage2_feedbackSelect_1_legend,
-    stage2_feedbackSelect_2_legend,
-    stage2_feedbackSelect_3_legend,
-    stage2_feedbackSelect_4_legend
-)
-from LAD.performanceGraph_queries import performanceQueries
 ############################# NEW IMPORTS ################################
 # from piazza_api.rpc import PiazzaRPC
 # from piazza_api import Piazza
@@ -110,18 +89,18 @@ SM = pd.read_csv("./piazza_stats/SM2.csv")
 SM1 = pd.read_csv("./piazza_stats/SM1.csv")
 
 #### creating frames for merging
-frames = [SB, VB, VD, NB, SM]
-frames1 = [SB, VB, VD, NB, SM1]
+# frames = [SB, VB, VD, NB, SM]
+# frames1 = [SB, VB, VD, NB, SM1]
 
 #### stage 2 dataframe
-result = pd.concat(frames)
-result.drop(["groups", "role"], axis=1, inplace=True)
-result.fillna(0)
+# result = pd.concat(frames)
+# result.drop(["groups", "role"], axis=1, inplace=True)
+# result.fillna(0)
 
-#### Stage 1 dataframe
-result1 = pd.concat(frames1)
-result1.drop(["groups", "role"], axis=1, inplace=True)
-result1.fillna(0)
+# #### Stage 1 dataframe
+# result1 = pd.concat(frames1)
+# result1.drop(["groups", "role"], axis=1, inplace=True)
+# result1.fillna(0)
 
 
 headers = CaseInsensitiveDict()
@@ -145,14 +124,6 @@ def login(request):
         password = request.POST.get("password")
         user = auth.authenticate(username=username, password=password)
         if user is not None:
-            # print("\n\n####\nUser: ", user)
-            theme = User.objects.get(username=username)
-            # global userTheme
-            # userTheme = theme.theme
-            # userTheme = User.objects.all()
-            # for element in theme:
-            # print("\n\n", theme.values(), "\n\n")
-            # print("\n\n########\nLOGIN:", theme)
             auth.login(request, user)
             return redirect("/dashboard")
         else:
@@ -174,11 +145,12 @@ def dashboard(request):
     # discourse_query = "SELECT DISTINCT topics.id,topics.title,topics.category_id,categories.name from topics,categories,users where topics.category_id=categories.id  AND topics.user_id=users.id AND users.moderator is true order by  categories.name;"
     
     # To get the theme of the user
-    theme = User.objects.get(username=request.user).theme
+    theme = LADUser.objects.get(user=request.user).theme
     # print("\n\n###########\nTheme: ", theme)
     
     # discourse_topics = pd.read_sql(discourse_query, con=connections["discourse"])
-    seen_url = "https://discuss.e-yantra.org/admin/plugins/explorer/queries/10/run"
+    # seen_url = "https://discuss.e-yantra.org/admin/plugins/explorer/queries/10/run"
+    seen_url = DiscourseAPI.objects.get(name="Query 10").url
     resp = requests.post(seen_url, headers=headers, data=files)
     sleep(2)
     discourse_topics = pd.DataFrame(resp.json()["rows"], columns=resp.json()["columns"])
@@ -194,16 +166,19 @@ def dashboard(request):
     # discourse_topics = cur.fetchall()
     # discourse_topics = dumps(discourse_topics)
 
-    url_general = "https://discuss.e-yantra.org/admin/plugins/explorer/queries/6/run"
+    # url_general = "https://discuss.e-yantra.org/admin/plugins/explorer/queries/6/run"
+    url_general = DiscourseAPI.objects.get(name="Query 6").url
     resp_general = requests.post(url_general, headers=headers, data=files)
     # print("\n\n#####################\nurl general: ", resp_general.json()["rows"][0][3])
     
-    url_instruct = "https://discuss.e-yantra.org/admin/plugins/explorer/queries/7/run"
+    # url_instruct = "https://discuss.e-yantra.org/admin/plugins/explorer/queries/7/run"
+    url_instruct = DiscourseAPI.objects.get(name="Query 7").url
     resp_instruct = requests.post(url_instruct, headers=headers, data=files)
     # print("\n\n#####################\nurl instructor: ", resp_instruct.json()["rows"][0])
 
 
-    url_student = "https://discuss.e-yantra.org/admin/plugins/explorer/queries/8/run"
+    # url_student = "https://discuss.e-yantra.org/admin/plugins/explorer/queries/8/run"
+    url_student = DiscourseAPI.objects.get(name="Query 8").url
     resp_student = requests.post(url_student, headers=headers, data=files)
     # sleep()
     # print("\n\n#####################\nurl student: ", resp_student.json()["rows"][0])
@@ -214,10 +189,10 @@ def dashboard(request):
         "questions": int(resp_general.json()["rows"][0][1]),
         "i_answers": int(resp_instruct.json()["rows"][0][0]),
         "s_answers": int(resp_student.json()["rows"][0][0]),
-        "net_time": 0,
-        "anon_pool": 0,
+        # "net_time": 0,
+        # "anon_pool": 0,
         "response_time": int(resp_general.json()["rows"][0][3].split('.')[0]),
-        "theme": "VBSBNBSMVD",
+        # "theme": "VBSBNBSMVD",
     }
     id=int(os.environ.get("Current_Task"))
     # id = 0
@@ -285,7 +260,7 @@ def dashboard(request):
             "theme":theme,
             "piazza_stats": stats,
             "json_data": js,
-            "parameters": parameters,
+            "parameters": parameters,   # not used
             "thresh": thresh,
             "this_task": this_task,
             "current_task": id,
@@ -295,8 +270,8 @@ def dashboard(request):
     )
 
 
-def temp(request):
-    return render(request, "temp.html")
+# def temp(request):
+#     return render(request, "temp.html")
 
 
 ############# SIGNUP CHANGES ##############
@@ -309,14 +284,24 @@ def signup(request):
             user.refresh_from_db()
             #### load the profile instance created by the signal
             user.save()
-            # raw_password = form.cleaned_data.get("password1")
+        else:
+            # form = SignUpForm()
+            return render(request, "signup.html", {"form": form, "form_error": form.errors})
 
-            #### login user after signing up
-            # user = authenticate(username=user.username, password=raw_password)
-            # auth.login(request, user)
+        theme = request.POST.get("theme")
+        lad_user =LADUser(
+                user = User.objects.get(username=request.POST.get("username")),
+                theme = theme
+            )
+        lad_user.save()
+        # raw_password = form.cleaned_data.get("password1")
 
-            #### redirect user to home page
-            return redirect("/login")
+        #### login user after signing up
+        # user = authenticate(username=user.username, password=raw_password)
+        # auth.login(request, user)
+
+        #### redirect user to home page
+        return redirect("/login")
     else:
         form = SignUpForm()
     return render(request, "signup.html", {"form": form})
@@ -447,8 +432,8 @@ def models_stats(request, id=None):
             request,
             "index.html",
             {
-                "theme": User.objects.get(username=request.user).theme,
-                "total": total,
+                "theme": LADUser.objects.get(user=request.user).theme,
+                "total": total,      # Not used
                 "this_task": this_task,
                 "prev_task": prev_task,
                 "taskname": t,
@@ -1636,41 +1621,35 @@ def taskData(request, id):
 def feedbackData(request, id):
     #### choose query based on task
     if id == 0:
-        # data_g=task0_feed
-        data_g_box = task0_feed_box
-        legend = task0_feed_box_legend
+        data_g_box = task0_feedback
+        legend = task0_feedback_legend
     elif id == 1:
-        # data_g=task1_feed
-        data_g_box = task1_feed_box
-        legend = task1_feed_box_legend
+        data_g_box = task1_feedback
+        legend = task1_feedback_legend
     elif id == 2:
-        # data_g=task2_feed
-        data_g_box = task2_feed_box
-        legend = task2_feed_box_legend
+        data_g_box = task2_feedback
+        legend = task2_feedback_legend
     elif id == 3:
-        # data_g=task3_feed
-        data_g_box = task3_feed_box
-        legend = task3_feed_box_legend
+        data_g_box = task3_feedback
+        legend = task3_feedback_legend
     elif id == 4:
-        # data_g=task4_feed
-        data_g_box = task4_feed_box
-        legend = task4_feed_box_legend
+        data_g_box = task4_feedback
+        legend = task4_feedback_legend
     elif id == 5:
-        # data_g=task5_feed
-        data_g_box = task5_feed_box
-        legend = task5_feed_box_legend
+        data_g_box = task5_feedback
+        legend = task5_feedback_legend
     elif id == 6:
-        data_g_box = stage1_feed_box_1
-        legend = stage1_feed_box_1_legend
+        data_g_box = stage1_part1
+        legend = stage1_part1_legend
     elif id == 7:
-        data_g_box = stage1_feed_box_2
-        legend = stage1_feed_box_2_legend
+        data_g_box = stage1_part2
+        legend = stage1_part2_legend
     elif id == 8:
-        data_g_box = stage1_feed_box_3
-        legend = stage1_feed_box_3_legend
+        data_g_box = stage1_part3
+        legend = stage1_part3_legend
     elif id == 9:
-        data_g_box = stage1_feed_box_4
-        legend = stage1_feed_box_4_legend
+        data_g_box = stage1_part4
+        legend = stage1_part4_legend
 
     # total_data = pd.read_sql(data_g, con=connection)
     # js = total_data.to_json()
@@ -1678,9 +1657,10 @@ def feedbackData(request, id):
     #### get data from database
     total_data_box = pd.read_sql(data_g_box, con=connection)
     total_data_box.drop("taskName", axis=1, inplace=True)
-
+    print(total_data_box)
     #### Find min,q1,median,q3 and max
     x = total_data_box.groupby("theme").quantile([0, 0.25, 0.5, 0.75, 1])
+    print(x)
     x2 = x.to_json()
     # quest_list = list(json.loads(js).keys())
     # print(quest_list)
@@ -1694,51 +1674,52 @@ def feedbackSelect(request, task):
     # print("\n\n####$$$$$$$\n", task)
     id = int(task)
     if id == 0:
-        data_g_box = task0_feedbackSelect
-        legend = task0_feedbackSelect_legend
+        data_g_box = task0_feedback
+        legend = task0_feedback_legend
     elif id == 1:
-        data_g_box = task1_feedbackSelect
-        legend = task1_feedbackSelect_legend
+        data_g_box = task1_feedback
+        legend = task1_feedback_legend
     elif id == 2:
-        data_g_box = task2_feedbackSelect
-        legend = task2_feedbackSelect_legend
+        data_g_box = task2_feedback
+        legend = task2_feedback_legend
     elif id == 3:
-        data_g_box = stage1_feedbackSelect_1
-        legend = stage1_feedbackSelect_1_legend
+        data_g_box = stage1_part1
+        legend = stage1_part1_legend
     elif id == 4:
-        data_g_box = stage1_feedbackSelect_2
-        legend = stage1_feedbackSelect_2_legend
+        data_g_box = stage1_part2
+        legend = stage1_part2_legend
     elif id == 5:
-        data_g_box = stage1_feedbackSelect_3
-        legend = stage1_feedbackSelect_3_legend
+        data_g_box = stage1_part3
+        legend = stage1_part3_legend
     elif id == 6:
-        data_g_box = stage1_feedbackSelect_4
-        legend = stage1_feedbackSelect_4_legend
+        data_g_box = stage1_part4
+        legend = stage1_part4_legend
     elif id == 7:
-        data_g_box = task3_feedbackSelect
-        legend = task3_feedbackSelect_legend
+        data_g_box = task3_feedback
+        legend = task3_feedback_legend
     elif id == 8:
-        data_g_box = task4_feedbackSelect
-        legend = task4_feedbackSelect_legend
+        data_g_box = task4_feedback
+        legend = task4_feedback_legend
     elif id == 9:
-        data_g_box = task5_feedbackSelect
-        legend = task5_feedbackSelect_legend
+        data_g_box = task5_feedback
+        legend = task5_feedback_legend
     elif id == 10:
-        data_g_box = stage2_feedbackSelect_1
-        legend = stage2_feedbackSelect_1_legend
+        data_g_box = stage2_part1
+        legend = stage2_part1_legend
     elif id == 11:
-        data_g_box = stage2_feedbackSelect_2
-        legend = stage2_feedbackSelect_2_legend
+        data_g_box = stage2_part2
+        legend = stage2_part2_legend
     elif id == 12:
-        data_g_box = stage2_feedbackSelect_3
-        legend = stage2_feedbackSelect_3_legend
+        data_g_box = stage2_part3
+        legend = stage2_part3_legend
     elif id == 13:
-        data_g_box = stage2_feedbackSelect_4
-        legend = stage2_feedbackSelect_4_legend
+        data_g_box = stage2_part4
+        legend = stage2_part4_legend
 
     #### get data from database
     feedbackDF = pd.read_sql(data_g_box, con=connection)
     k = True
+    feedbackDF.drop(["Entries", "taskName"], axis=1, inplace=True)
     t = pd.DataFrame()
     for x in feedbackDF.columns:
         if k:
@@ -1764,29 +1745,29 @@ def feedbackSelect(request, task):
 def feedbackTrack(request, id):
     #### get queries to be executed based on id
     if id == 0:
-        data_g_box = [task0_feed_box]
+        data_g_box = [task0_feedback]
     elif id == 1:
-        data_g_box = [task1_feed_box, task0_feed_box]
+        data_g_box = [task1_feedback, task0_feedback]
     elif id == 2:
-        data_g_box = [task2_feed_box, task1_feed_box, task0_feed_box]
+        data_g_box = [task2_feedback, task1_feedback, task0_feedback]
     elif id == 3:
-        data_g_box = [task3_feed_box, task2_feed_box, task1_feed_box, task0_feed_box]
+        data_g_box = [task3_feedback, task2_feedback, task1_feedback, task0_feedback]
     elif id == 4:
         data_g_box = [
-            task4_feed_box,
-            task3_feed_box,
-            task2_feed_box,
-            task1_feed_box,
-            task0_feed_box,
+            task4_feedback,
+            task3_feedback,
+            task2_feedback,
+            task1_feedback,
+            task0_feedback,
         ]
     elif id == 5:
         data_g_box = [
-            task5_feed_box,
-            task4_feed_box,
-            task3_feed_box,
-            task2_feed_box,
-            task1_feed_box,
-            task0_feed_box,
+            task5_feedback,
+            task4_feedback,
+            task3_feedback,
+            task2_feedback,
+            task1_feedback,
+            task0_feedback,
         ]
 
     # total_data_box=pd.read_sql(data_g_box,con=connection)
@@ -1861,7 +1842,7 @@ def get_comments(request, task_id):
             from 
             stage{}_feedback as tf, team_member_detail as tmd 
             WHERE tf.team_member_id=tmd.id and 
-            lower(tf.comment) not regexp "^[[:punct:]]*[[:blank:]]*(good|na|nan|n/a|n.a|nil|nill|nice|no|noo|no comment|no comments|no feedback|no other feedback|none|nope|nothing|nah|no suggestions|good task|great task|great work|all good|good experience|amazing experience|all clear|no queries|no question|not any|nothing much|nothing else|null|ok|thanks|thank you|no further comments|.|..|...)[[:blank:]]*[[:punct:]]*$";""".format(task_id-5)
+            lower(tf.comment) not regexp "^[[:punct:]]*[[:blank:]]*[[:punct:]]*$";""".format(task_id-5)
     else:
         query3 = """select tf.team_id, 
                     tf.team_member_id, tf.theme, tmd.name, tf.comment 
@@ -1873,36 +1854,37 @@ def get_comments(request, task_id):
     tc = data3.to_json()
     return JsonResponse({"task_comments": tc})
 
+################### ON HOLD ###################
 
-def performanceGraph(request, theme, task_num, sub_task_num):
+# def performanceGraph(request, theme, task_num, sub_task_num):
     
-    query = {
-        0: """ SELECT theme, marks from task0_status where theme = '{}' """.format(theme),
-        1: """ SELECT theme, marks from task1_status where theme = '{}' and task1_number = '{}' """.format(theme, sub_task_num),
-        2: """ SELECT theme, marks from task2_status where theme = '{}' and task2_number = '{}' """.format(theme, sub_task_num),
-        3: """ SELECT theme, marks, penalty from task3_status where theme = '{}' and task3_number = '{}' """.format(theme, sub_task_num),
-        4: """ SELECT theme, marks, penalty from task4_status where theme = '{}' and task1_number = '{}' """.format(theme, sub_task_num),
-        5: """ SELECT theme, marks, penalty from task5_status where theme = '{}' and task1_number = '{}' """.format(theme, sub_task_num),
-        6: """ SELECT theme, marks, penalty from task6_status where theme = '{}' and task1_number = '{}' """.format(theme, sub_task_num)
-    }
+#     query = {
+#         0: """ SELECT theme, marks from task0_status where theme = '{}' """.format(theme),
+#         1: """ SELECT theme, marks from task1_status where theme = '{}' and task1_number = '{}' """.format(theme, sub_task_num),
+#         2: """ SELECT theme, marks from task2_status where theme = '{}' and task2_number = '{}' """.format(theme, sub_task_num),
+#         3: """ SELECT theme, marks, penalty from task3_status where theme = '{}' and task3_number = '{}' """.format(theme, sub_task_num),
+#         4: """ SELECT theme, marks, penalty from task4_status where theme = '{}' and task1_number = '{}' """.format(theme, sub_task_num),
+#         5: """ SELECT theme, marks, penalty from task5_status where theme = '{}' and task1_number = '{}' """.format(theme, sub_task_num),
+#         6: """ SELECT theme, marks, penalty from task6_status where theme = '{}' and task1_number = '{}' """.format(theme, sub_task_num)
+#     }
     
-    print(query[task_num])
-    res_df = pd.read_sql(query[task_num], con=connection)
-    print("\n\n$$$$$$$$\n", res_df)
-    # col = list(res_df.columns)
-    drop_ls = ['theme']
-    # for i in range(1, len(col), 2):
-        # res_df[col[i]] = res_df[col[i]]-res_df[col[i+1]]
-        # drop_ls.append(col[i+1])
-    if (task_num != 0) and (task_num != 1) and (task_num != 2):
-        res_df['marks'] = res_df['marks'] - res_df['penalty']
-        # drop_ls.append('marks')
-        drop_ls.append('penalty')
-    # print(drop_ls)
-    res_df.drop(drop_ls, axis=1, inplace=True)
-    print(res_df)
+#     print(query[task_num])
+#     res_df = pd.read_sql(query[task_num], con=connection)
+#     print("\n\n$$$$$$$$\n", res_df)
+#     # col = list(res_df.columns)
+#     drop_ls = ['theme']
+#     # for i in range(1, len(col), 2):
+#         # res_df[col[i]] = res_df[col[i]]-res_df[col[i+1]]
+#         # drop_ls.append(col[i+1])
+#     if (task_num != 0) and (task_num != 1) and (task_num != 2):
+#         res_df['marks'] = res_df['marks'] - res_df['penalty']
+#         # drop_ls.append('marks')
+#         drop_ls.append('penalty')
+#     # print(drop_ls)
+#     res_df.drop(drop_ls, axis=1, inplace=True)
+#     print(res_df)
 
-    return JsonResponse({'result':res_df.to_json()})
+#     return JsonResponse({'result':res_df.to_json()})
 
 @csrf_exempt
 def email(request):

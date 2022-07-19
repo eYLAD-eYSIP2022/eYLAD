@@ -10,6 +10,10 @@ function startTour() {
         title: "Navbar !!",
         content: "<p>Dropdown for changing the theme and Logout button !!</p>"
       },{
+        id: "sidebar",
+        title: "Other Pages !!",
+        content: "<p>Want more info regarding tasks, click me.</p>"
+      },{
         id: "tour-prediction",
         title: "Predicting Results",
         content: "<p>Stats of how many teams have submmitted the tasks and also a <b>prediction</b> of teams expected to submit.</p>"
@@ -33,10 +37,6 @@ function startTour() {
         id: "tour-informed-teams",
         title: "Informed Teams Counter",
         content: "<p>See the data of how many teams had seen a particular post/topic on Discourse</p>"
-      },{
-        id: "sidebar",
-        title: "Other Pages !!",
-        content: "<p>Click me to have a more detailed view of Tasks.</p>"
       }
     ];
   }

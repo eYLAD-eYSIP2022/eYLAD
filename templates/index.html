@@ -351,7 +351,7 @@
     <script src="/media/js/template.js"></script>
     <!-- store the data in local storage to retrive data in JSON -->
     <script>
-      localStorage.setItem("total", "{{total|escapejs}}")
+      {% comment %} localStorage.setItem("total", "{{total|escapejs}}") {% endcomment %}
       localStorage.setItem("this_task", "{{this_task|escapejs}}")
       localStorage.setItem("prev_task", "{{prev_task|escapejs}}")
       localStorage.setItem("sub_by_date","{{sub_by_date|escapejs}}")
