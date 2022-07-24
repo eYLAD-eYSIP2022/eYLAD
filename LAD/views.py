@@ -10,7 +10,7 @@ from django.db import connection
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import auth
 from django.contrib.auth.models import User
-from .models import DiscourseAPI, LADUser, SignUpForm
+from .models import DiscourseAPI, LADUser, SignUpForm, Theme
 from django.contrib.auth import authenticate
 import datetime
 import requests
@@ -80,13 +80,13 @@ from LAD.feedback_queries import (
 # p.user_login(email='',password='')
 
 #### reading csv file of piazza data
-pd.options.mode.chained_assignment = None  # default='warn'
-SB = pd.read_csv("./piazza_stats/SB.csv")
-VB = pd.read_csv("./piazza_stats/VB.csv")
-VD = pd.read_csv("./piazza_stats/VD.csv")
-NB = pd.read_csv("./piazza_stats/NB.csv")
-SM = pd.read_csv("./piazza_stats/SM2.csv")
-SM1 = pd.read_csv("./piazza_stats/SM1.csv")
+# pd.options.mode.chained_assignment = None  # default='warn'
+# SB = pd.read_csv("./piazza_stats/SB.csv")
+# VB = pd.read_csv("./piazza_stats/VB.csv")
+# VD = pd.read_csv("./piazza_stats/VD.csv")
+# NB = pd.read_csv("./piazza_stats/NB.csv")
+# SM = pd.read_csv("./piazza_stats/SM2.csv")
+# SM1 = pd.read_csv("./piazza_stats/SM1.csv")
 
 #### creating frames for merging
 # frames = [SB, VB, VD, NB, SM]
@@ -146,6 +146,9 @@ def dashboard(request):
     
     # To get the theme of the user
     theme = LADUser.objects.get(user=request.user).theme
+    theme_list = list(Theme.objects.all().values_list('theme', flat=True))
+    theme_list = dumps(theme_list)
+    print("\n\n#####", theme_list)
     # print("\n\n###########\nTheme: ", theme)
     
     # discourse_topics = pd.read_sql(discourse_query, con=connections["discourse"])
@@ -204,7 +207,8 @@ def dashboard(request):
     #### get students submitted this task
     j = cursor.execute(sql_sub_thistask)
     this_task = cursor.fetchall()
-    this_task = dumps(this_task)
+    this_task = dumps(dict(this_task))
+    print(this_task)
 
     if id == 0:
         #### get list of parameters
@@ -258,6 +262,7 @@ def dashboard(request):
         "dashboard.html",
         {
             "theme":theme,
+            "theme_list":theme_list,
             "piazza_stats": stats,
             "json_data": js,
             "parameters": parameters,   # not used
@@ -1657,10 +1662,10 @@ def feedbackData(request, id):
     #### get data from database
     total_data_box = pd.read_sql(data_g_box, con=connection)
     total_data_box.drop("taskName", axis=1, inplace=True)
-    print(total_data_box)
+    # print(total_data_box)
     #### Find min,q1,median,q3 and max
     x = total_data_box.groupby("theme").quantile([0, 0.25, 0.5, 0.75, 1])
-    print(x)
+    # print(x)
     x2 = x.to_json()
     # quest_list = list(json.loads(js).keys())
     # print(quest_list)

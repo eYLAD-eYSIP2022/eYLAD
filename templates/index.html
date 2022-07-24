@@ -352,16 +352,16 @@
     <!-- store the data in local storage to retrive data in JSON -->
     <script>
       {% comment %} localStorage.setItem("total", "{{total|escapejs}}") {% endcomment %}
-      localStorage.setItem("this_task", "{{this_task|escapejs}}")
+      localStorage.setItem("this_task_index", "{{this_task|escapejs}}")
       localStorage.setItem("prev_task", "{{prev_task|escapejs}}")
       localStorage.setItem("sub_by_date","{{sub_by_date|escapejs}}")
       localStorage.setItem("taskname", "{{taskname|escapejs}}")
       localStorage.setItem("sub_this_task", "{{sub_this_task|escapejs}}")
-      localStorage.setItem("sub_by_date","{{sub_by_date|escapejs}}")
-      localStorage.setItem("thresh","{{thresh|escapejs}}")
-      localStorage.setItem("parameters","{{parameters|escapejs}}")
+      {% comment %} localStorage.setItem("sub_by_date","{{sub_by_date|escapejs}}") {% endcomment %}
+      localStorage.setItem("thresh_index","{{thresh|escapejs}}")
+      localStorage.setItem("parameters_index","{{parameters|escapejs}}")
       localStorage.setItem("details","{{details|escapejs}}")
-      localStorage.setItem("json_data","{{json_data|escapejs}}")
+      localStorage.setItem("json_data_index","{{json_data|escapejs}}")
     </script>
     <script src="/media/js/index.js"></script>
     <script src="/media/js/guided-tour.js"></script>

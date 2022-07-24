@@ -2,10 +2,8 @@ let ajax_data;
 let ajax_legend;
 
 let graph_data;
-var graph_label;
 var graph_header;
 var graph_total_reponses;
-var feedbackSelectChart;
 
 const drawGraph = () => {
     document.getElementById('feedbackSelectContainer').innerHTML="";
@@ -172,7 +170,7 @@ $('#feedback-task').on('change', function (e) {
         dataType: 'json',
         // #### Success function
         success: function (suc_data) {
-            console.log("AJAX called!:>");
+            // console.log("AJAX called!:>");
             // console.log();
             // #### Converting data in json format
             ajax_data = JSON.parse(suc_data.data);
@@ -180,10 +178,10 @@ $('#feedback-task').on('change', function (e) {
             console.log(ajax_data, ajax_legend);
             var ques = Object.keys(ajax_data);
             ques.forEach((element) => {
-                console.log(element);
+                // console.log(element);
                 $('#feedback-ques').append(new Option(element, element));
             });
-            console.log(ajax_data);
+            // console.log(ajax_data);
             
         }
     });
@@ -195,12 +193,12 @@ $('#graph-selection-btn').click(function() {
     var FB_ques = $("#feedback-ques option:selected").val();
     var FB_graph = $("#graph-type option:selected").val();
     if ( (FB_graph != -1) && (FB_ques != -1) && (FB_task != -1) ) {
-        console.log(ajax_data);
+        // console.log(ajax_data);
         var legend_data = ajax_legend[FB_ques];
         graph_data = [];
-        console.log(ajax_data, FB_ques, ajax_legend);
+        // console.log(ajax_data, FB_ques, ajax_legend);
         var ques_data = ajax_data[FB_ques];
-        console.log(ques_data);
+        // console.log(ques_data);
         let j = 6;
         graph_total_reponses = 0;
         if ((FB_task == 6) || (FB_task == 13))
@@ -208,7 +206,7 @@ $('#graph-selection-btn').click(function() {
         for(let i=1;i<j;i++) {
             var str='';
             str = nav_theme+"_"+i;
-            console.log(str, ques_data[str]);
+            // console.log(str, ques_data[str]);
             if (ques_data[str] != null) {
                 graph_data.push([legend_data[i],ques_data[str]]);
                 graph_total_reponses += parseInt(ques_data[str]);
@@ -217,7 +215,6 @@ $('#graph-selection-btn').click(function() {
         console.log(graph_data);
         // Graph
         graph_header = FB_ques;
-        graph_label = ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'];
         drawGraph();
     }
     else {

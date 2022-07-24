@@ -6,15 +6,20 @@ var curr_task=0,box_data;
 var data, y, conf, result, expnotsub, box_data, tableCells, token, conftype=["table-success", "table-warning", "table-danger"], new_rows,threshold, predthis, text = "ALL";
 var  feedback_data,total_submissions = 0,this_task;
 var team_status=["seen", "unseen"];
-
+const theme_list = JSON.parse(localStorage.getItem("theme_list"));
+console.log(theme_list, typeof(theme_list));
 let mychart = document.getElementById("barChart2").getContext('2d');
 var table = false
 var threshold = JSON.parse(localStorage.getItem("thresh"));
 threshold = parseFloat(threshold)
 var parameters = JSON.parse(localStorage.getItem("parameters"));
 var data = JSON.parse(localStorage.getItem("json_data"));
-var this_task = JSON.parse(localStorage.getItem("this_task"));
+var this_task;
+// console.log("{{this_task|es}}");
+this_task = JSON.parse(localStorage.getItem("this_task"));
+console.log(data, this_task);
 var discourse_topics = JSON.parse(localStorage.getItem("discourse_topics"));
+// console.log(discourse_topics);
 var discourse_categories = JSON.parse(localStorage.getItem("discourse_categories"));
 var current_task_no = localStorage.getItem("current_task");
 // console.log(discourse_topics);
@@ -50,8 +55,8 @@ const theme_change = () => {
 }
 
 console.log(nav_theme)
-console.log(discourse_categories)
-console.log(discourse_topics)
+// console.log(discourse_categories)
+// console.log(discourse_topics)
 // Appending option tags in HTML of "Select Topic" of "Informed Teams Counter" table
 Object.keys(discourse_categories["name"]).forEach((val,index)=>{
     let new_option = document.createElement("option")
@@ -65,7 +70,6 @@ $(document).ready( function () {
     $.noConflict();
     
 } );
-
 
 const updateOnChange_category = () =>{
     let select_option = category_selector.value
@@ -88,6 +92,11 @@ const updateOnChange_category = () =>{
             topic_selector.appendChild(new_option)            
         }
     })
+}
+
+
+const getPredText = () => { 
+    return `${topic_selector.options[topic_selector.selectedIndex].innerText}_${nav_theme}_Seen_unseen`;
 }
 
 const updateOnChange_topic = () =>{
@@ -465,7 +474,7 @@ $('#draftEmailSubmit').on('click', function() {
     var bcc = $('#draftEmail-bcc').val();
     var sub = $('#draftEmail-sub').val();
     var msg = $('#draftEmail-msg').val();
-    console.log(cc, "\n", bcc, "\n", sub, msg)
+    console.log(cc, "\n", bcc, "\n", sub, msg);
     $.ajax({
         type: 'POST',
         url: '/email/',
@@ -487,183 +496,56 @@ $('#draftEmailSubmit').on('click', function() {
     });
 });
 
-// ########################################   Doughnut Chart Start #########################################
-let BarchartData = [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
-// ##########################################  AJAX BEGINS #################################################
+// ########################################   Task Prediction Start #########################################
 
-// ##########################################  AJAX ENDS #################################################
-// #### Populate rest of the themes
-
-const getPredText = () => { 
-    return `${topic_selector.options[topic_selector.selectedIndex].innerText}_${nav_theme}_Seen_unseen`;
+// #### Initialize the semi-empty Doughnut Chart data object
+var DoughchartData = {}
+for (var j=0; j<theme_list.length; j++) {
+    DoughchartData[theme_list[j]] = [0, 0, 0];
+    // Initialize the number of teams submitted
+    DoughchartData[theme_list[j]][0] = this_task[theme_list[j]];
+    // console.log(DoughchartData);
 }
+console.log(DoughchartData);
 
-// #### for dynamic naming of comment table download
-const getComText = (theme, task) => {
-    return `${theme}_Comments_${task}`;
-}
-
+// #### Populate data object for rest of the themes
 const setBarData=(data,y,threshold)=>{
+    console.log(DoughchartData.length, data, y, threshold);
     for (var i = 0; i < y.length; ++i) {
-            switch(data["theme"][i]) {
-                case "AB":{
-                    if (data["confidence"][i] > threshold) {
-                        BarchartData[1][1] +=1
-                    } else {
-                        BarchartData[2][1] += 1
-                    }
-                    break;
-                }
-                case "BM":{
-                    if (data["confidence"][i] > threshold) {
-                        BarchartData[1][2] +=1
-                    } else {
-                        BarchartData[2][2] += 1
-                    }
-                    break;
-                }
-                case "DB":{
-                    if (data["confidence"][i] > threshold) {
-                        BarchartData[1][3] +=1
-                    } else {
-                        BarchartData[2][3] += 1
-                    }
-                    break;
-                }
-                case "FW":{
-                    if (data["confidence"][i] > threshold) {
-                        BarchartData[1][4] +=1
-                    } else {
-                        BarchartData[2][4] += 1
-                    }
-                    break;
-                }
-                case "SM":{
-                    if (data["confidence"][i] > threshold) {
-                        BarchartData[1][5] +=1
-                    } else {
-                        BarchartData[2][5] += 1
-                    }
-                    break;
-                }
-                case "SS":{
-                    if (data["confidence"][i] > threshold) {
-                        BarchartData[1][6] +=1
-                    } else {
-                        BarchartData[2][6] += 1
-                    }
-                    break;
-                }
-              }
+        console.log(i);
+        if (data["confidence"][i] > threshold) {
+            console.log(DoughchartData[data['theme'][i]][1]);
+            DoughchartData[data['theme'][i]][1] += 1;
+        }
+        else {
+            console.log(DoughchartData[data['theme'][i]]);
+            DoughchartData[data['theme'][i]][2] += 1;
+        }
     }
-    // console.log(this_task)
-    BarchartData[0][1] = this_task[5][1]
-    BarchartData[0][2] = this_task[2][1]
-    BarchartData[0][3] = this_task[3][1]
-    BarchartData[0][4] = this_task[1][1]
-    BarchartData[0][5] = this_task[4][1]
-    BarchartData[0][6] = this_task[0][1]
-    // console.log(BarchartData)
+    console.log(DoughchartData[nav_theme][0], DoughchartData[nav_theme][1], DoughchartData[nav_theme][2]);
 }
 
-// #### Function to update doughnut chart based on themes
+// #### Function to update doughnut chart based on theme-change
 const updateDoughnutChart=()=>{
-    // #### get value of the selected item
-    // var value = document.getElementById(`doughnut1`).value;
-    var pos = 0
-    // #### Switch case for values
-    switch(nav_theme) {
-        case "AB":{
-            pos=1;
-            break;
-        }
-        case "BM":{
-            pos=2;
-            break;
-        }
-        case "DB":{
-            pos=3;
-            break;
-        }
-        case "FW":{
-            pos=4;
-            break;
-        }
-        case "SM":{
-            pos=5;
-            break;
-        }
-        case "SS":{
-            pos=6;
-            break;
-        }
-        default:{
-            pos=0;
-            break;
-        }
-    }
     // #### update doughnut chart
-    doughnutChart.data.datasets[0].data[0] = BarchartData[0][pos];
-    doughnutChart.data.datasets[0].data[1] = BarchartData[1][pos];
-    doughnutChart.data.datasets[0].data[2] = BarchartData[2][pos];
-    // doughnutChart.data.labels.pop();
-    // doughnutChart.data.datasets.forEach((dataset) => {
-    //     dataset.data.pop();
-    // });
-    console.log(BarchartData[0][pos], BarchartData[1][pos], BarchartData[2][pos])
+    doughnutChart.data.datasets[0].data[0] = DoughchartData[nav_theme][0];
+    doughnutChart.data.datasets[0].data[1] = DoughchartData[nav_theme][1];
+    doughnutChart.data.datasets[0].data[2] = DoughchartData[nav_theme][2];
+    console.log(DoughchartData[nav_theme][0], DoughchartData[nav_theme][1], DoughchartData[nav_theme][2]);
     doughnutChart.update();
-    // doughnutChart.update();
 }
-
 
 // #### Threshold for this model
-// console.log(this_task)
-this_task.map((obj, index) => { total_submissions = total_submissions + obj[1]; return(true)})
 threshold = parseFloat(threshold)
-// console.log(team_contact_details);
-
 
 // #### Calculate data for doughnut chart
-// console.log(data)
 y = Object.values(data["team_id"])
-conf = Object.values(data["confidence"])
-result = conf.filter(con => con > threshold)
-expnotsub = conf.length - result.length
-// console.log(result)
 
-// // #### Set table loading spinners to none
-// document.getElementById("spinner_home2").style.display = "none";
+// #### Set table loading spinners to none
 document.getElementById("spinner_home1").style.display = "none";
-    
 
+// Call the function to populate the Doughnut data object
 setBarData(data,y,threshold)
-
-
-// #### Set data of 2D matrix
-BarchartData[0][0] = total_submissions
-BarchartData[1][0] = result.length
-BarchartData[2][0] = expnotsub
-
-// #### Draw Doughnut chart
-// doughnutChart = new Chart(document.getElementById("doughnutChart"), {
-//     type: 'doughnut',
-//     data: {
-//         labels: ["Teams Submitted", 'Teams expected to submit', 'Teams not expected to submit'],
-//         datasets: [
-//             {
-//                 label: "Task status",
-//                 backgroundColor: ["#00AFB9", "#0081A7", "#F07167"],
-//                 data: [total_submissions, result.length, expnotsub]
-//             }
-//         ]
-//     },
-//     options: {
-//         title: {
-//             display: true,
-//             text: `Task ${current_task_no} Prediction`
-//         }
-//     }
-// });
 
 const config = {
     type: 'doughnut',
@@ -675,7 +557,11 @@ const config = {
         ],
         datasets: [{
             label: 'Task Status',
-            data: [BarchartData[0][key_value[nav_theme]], BarchartData[1][key_value[nav_theme]], BarchartData[2][key_value[nav_theme]]],
+            data: [
+                DoughchartData[nav_theme][0], 
+                DoughchartData[nav_theme][1], 
+                DoughchartData[nav_theme][2]
+            ],
             backgroundColor: [
                 "#00AFB9", 
                 "#0081A7", 
@@ -700,12 +586,12 @@ const config = {
 const doughnutChart = new Chart(
     document.getElementById('myChart'),
     config,
-    // console.log(BarchartData[0][key_value[nav_theme]], BarchartData[1][key_value[nav_theme]], BarchartData[2][key_value[nav_theme]])
+    console.log(DoughchartData[nav_theme][0], DoughchartData[nav_theme][1], DoughchartData[nav_theme][2])
 );
+// ########################################   Task Prediction Ends  #########################################
 
-// ########################################   Doughnut Chart Ends  #########################################
 
-
+// ########################################   Feedback Starts  #########################################
 // #### ajax for the box chart
 $.ajax({
     // #### URL and Datatype for ajax call
@@ -725,18 +611,6 @@ $.ajax({
         console.log(box_data);
         // #### create array of data in required format
         var data = Object.keys(box_data).map((obj1,index1)=>{
-            // console.log(
-            //     {
-            //         x:obj1,
-            //         val_index:val_index,
-            //         val:`('${val_index}', 0.0)`,
-            //         low :box_data[obj1][`('${val_index}', 0.0)`],
-            //         q1 : box_data[obj1][`('${val_index}', 0.25)`],
-            //         median : box_data[obj1][`('${val_index}', 0.5)`],
-            //         q3 : box_data[obj1][`('${val_index}', 0.75)`],
-            //         high : box_data[obj1][`('${val_index}', 1.0)`]
-            //     }
-            // )
             return(
                 {
                 x:obj1,
@@ -906,6 +780,12 @@ const updateOnChange = () =>{
         chart.container("box_chart");
         chart.draw();
     }
+}
+
+
+// #### for dynamic naming of comment table download
+const getComText = (theme, task) => {
+    return `${theme}_Comments_${task}`;
 }
 
 const updateOnChange_comment = () =>{

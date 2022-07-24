@@ -9,7 +9,8 @@ num = parseInt(num)
 // var total = JSON.parse(localStorage.getItem("total"));
 
 // #### Data of teams submitted this task for bar chart
-var this_task = JSON.parse(localStorage.getItem("this_task"));
+var this_task = JSON.parse(localStorage.getItem("this_task_index"));
+console.log(this_task);
 
 // #### Data of teams submitted prev task
 var prev_task = JSON.parse(localStorage.getItem("prev_task"));
@@ -23,11 +24,11 @@ var sub_this_task = JSON.parse(localStorage.getItem("sub_this_task"));
 // #### Data of teams submitted with date this task for line chart
 var sub_by_date = JSON.parse(localStorage.getItem("sub_by_date"));
 sub_by_date.reverse()
-var threshold = JSON.parse(localStorage.getItem("thresh"));
+var threshold = JSON.parse(localStorage.getItem("thresh_index"));
 threshold = parseFloat(threshold)
-var parameters = JSON.parse(localStorage.getItem("parameters"));
+var parameters = JSON.parse(localStorage.getItem("parameters_index"));
 var team_contact_details = JSON.parse(localStorage.getItem("details"));
-var data = JSON.parse(localStorage.getItem("json_data"));
+var data = JSON.parse(localStorage.getItem("json_data_index"));
 var time_passed = document.getElementById("time_pass_updated")
 var key_value = {
     'ALL':0,
@@ -296,9 +297,12 @@ let LineChart = new Chart(document.getElementById("lineChart"),{
             label: 'Number of Logins per day',
             // #### Show All themes by default
             data: LinechartData.map((obj)=>{return(obj[key_value[nav_theme]])}),
-            fill: true,
             // #### Color of the chart
-            borderColor: 'rgb(75, 192, 192)',
+            fill: {
+                target: true,
+                above: '#8ce2ff',   // Area will be red above the origin
+            },
+            borderColor: '#4ca8c7',
             tension: 0.1
         }]
     },
